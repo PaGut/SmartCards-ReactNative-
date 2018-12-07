@@ -10,6 +10,43 @@ import Firebase from '../Firebase';
 
 export default class SignIn extends Component {
 
+    state = { username: "", password: "" };
+
+    _handleLogin = async () => {
+
+        let { username, password } = this.state;
+
+        // check if username and password are filled        
+        if (username && password) {
+            // check if user exists
+            try {
+                let userData = {};
+                // get user from database
+                query = await Firebase.db.collection('user').where("username", "==", username).get();
+
+                // set selected entry to local object 
+                query.forEach(user => {
+                    userData = {
+                        id: user.id,
+                        username: user.data().username,
+                        password: user.data().password,
+                        email: user.data().email
+                    };
+                });
+
+                // check if password is correct
+                if (password === userData.password) {
+                    // navigate to app homescreen
+                    this.props.navigation.navigate("SubjectListScreen", {
+                        userData: userData
+                    });
+                }
+            } catch (error) {
+                alert("User does not exist")
+            }
+        }
+    }
+
     /* after view is called */
     componentDidMount() {
         // init firebase object        
@@ -32,15 +69,17 @@ export default class SignIn extends Component {
                                     keyboardType='email-address'
                                     returnyKeyType='next'
                                     autoCorrect={false}
-                                    onSubmitEditing={() => this.refs.txtPassword.focus()} />
+                                    onSubmitEditing={() => this.refs.txtPassword.focus()}
+                                    onChangeText={(value) => this.setState({ username: value })} />
                                 <TextInput style={[styles.input, { marginTop: 10 }]}
                                     placeholder="Enter password"
                                     placeholderColor='lightsalmon'
                                     returnyKeyType='go'
                                     secureTextEntry={true}
-                                    ref={"txtPassword"} />
+                                    ref={"txtPassword"}
+                                    onChangeText={(value) => this.setState({ password: value })} />
                                 <TouchableOpacity style={styles.buttonContainer} onPress={() => {
-                                    this.props.navigation.navigate("App");
+                                    this._handleLogin()
                                 }}>
                                     <Text style={styles.buttonText}>SIGN IN</Text>
                                 </TouchableOpacity>
@@ -48,7 +87,7 @@ export default class SignIn extends Component {
                                     buttonStyle={{ marginTop: 30 }}
                                     title="Sign Up"
                                     onPress={() => {
-                                        this.props.navigation.navigate("SignUp");
+                                        this.props.navigation.navigate("SignUp")
                                     }}
                                 />
                             </View>
