@@ -2,18 +2,19 @@ import React, { Component } from 'react';
 import { StyleSheet, ActivityIndicator, FlatList, Text, View, Button, TouchableOpacity } from 'react-native';
 // import custom components
 import SubjectListItem from '../components/SubjectListItem'
+import NewSubject from '../components/NewSubject'
 // import database
 import Firebase from '../Firebase';
 
 export default class SubjectListScreen extends Component {
 
+    // set class states
+    state = { userData: {}, showCreateSubjectScreen: false, subjects: [], isLoading: true };
+
     // set header toolbar title
     static navigationOptions = {
         title: "Smart Cards"
     }
-
-    // set class states
-    state = { subjects: [], isLoading: true };
 
     /* retrieve subjects from database */
     _retrieveSubjects = async () => {
@@ -42,7 +43,7 @@ export default class SubjectListScreen extends Component {
             // save quote within sql lite database
             this._saveSubjectToDB(name, subjects);
         }
-        this.setState({ subjects });
+        this.setState({ subjects, showCreateSubjectScreen: false });
     };
 
     /* save subjects to firebase DB */
@@ -68,12 +69,15 @@ export default class SubjectListScreen extends Component {
     componentDidMount() {
         // init firebase object        
         Firebase.init();
-        // TODO check login data
+        // set user data 
+        debugger;
+        const userData = this.props.navigation.getParam('userData');
+        this.setState({ userData: userData });
         // get subjects for active user from firebase db
         this._retrieveSubjects();
     }
 
-    // erstellt Benutzeroberfläche, abhängig von denen im state gesetzten Variablen
+    // render view, depending on active state and props
     render() {
 
         // set loading indicator, if isLoading is true
@@ -84,10 +88,6 @@ export default class SubjectListScreen extends Component {
                 </View>
             )
         }
-        // Parameter übergabe aktuell undefined, eventuell als einen Stack definieren, kennt sich wohl übergreifend nicht
-        debugger;
-        console.log(this.props.navigation.getParam('userData'));
-        const userData = this.props.navigation.getParam('userData');
 
         return (
             <View style={styles.container}>
@@ -106,10 +106,11 @@ export default class SubjectListScreen extends Component {
                     )}
                 />
                 <View style={styles.createbuttonContainer}>
-                    <TouchableOpacity style={styles.createButton} onPress={() => this._addSubject("Fach 7")}>
+                    <TouchableOpacity style={styles.createButton} onPress={() => this.setState({ showCreateSubjectScreen: true })}>
                         <Text style={styles.createButtonText}>Create New Subject</Text>
                     </TouchableOpacity>
                 </View>
+                <NewSubject visible={this.state.showCreateSubjectScreen} onSave={this._addSubject} />
             </View >
         );
     }
@@ -132,14 +133,14 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     createbuttonContainer: {
-        backgroundColor: 'lightsalmon'
+        backgroundColor: 'white'
     },
     createButton: {
         marginTop: 10,
         marginHorizontal: 20,
         borderTopWidth: 1,
-        borderColor: "white",
-        backgroundColor: "white",
+        borderColor: "lightsalmon",
+        backgroundColor: "lightsalmon",
         alignItems: 'center',
         paddingVertical: 15,
         borderRadius: 40,
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
     },
     createButtonText: {
         textAlign: 'center',
-        color: 'lightsalmon',
+        color: 'white',
         fontWeight: 'bold'
     }
 });
