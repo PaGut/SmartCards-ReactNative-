@@ -17,7 +17,7 @@ const headerStyle = {
     marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
 };
 
-// Name der Routen
+// name of routs
 const HomeStack = createStackNavigator({ SubjectListScreen, SubjectDetailScreen }, {
     defaultNavigationOptions: {
         headerStyle: {

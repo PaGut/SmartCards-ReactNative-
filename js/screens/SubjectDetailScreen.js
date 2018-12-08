@@ -27,6 +27,7 @@ export default class SubjectDetailScreen extends Component {
             // set card list data
             cardLists.push({ name: name, desc: desc, examDate: examDate });
             // save quote within sql lite database
+            debugger;
             this._saveCardListToDB(name, desc, examDate, cardLists);
         } else {
             alert("Please set name for CardList");
@@ -68,7 +69,7 @@ export default class SubjectDetailScreen extends Component {
                 examDate: cardList.data().examDate
             });
         });
-        // neuen state setzen und loading indicator false setzen
+        // set new state and set loading indicator to false
         this.setState({ cardLists, isLoading: false });
     }
 
@@ -120,7 +121,7 @@ export default class SubjectDetailScreen extends Component {
     }
 }
 
-//Dynamische Breite anhand des Windows berechnen
+//Calculate width dynamically according to window-width
 const width = Dimensions.get('window').width * 0.75;
 
 const styles = StyleSheet.create({
