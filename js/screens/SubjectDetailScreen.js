@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ActivityIndicator, Dimensions, View, FlatList, TouchableOpacity, ScrollView, StyleSheet, Text } from 'react-native';
+import { Alert, ActivityIndicator, Dimensions, View, FlatList, TouchableOpacity, ScrollView, StyleSheet, Text } from 'react-native';
 // import custom components
 import CardListItem from '../components/CardListItem'
 import NewCardList from '../components/NewCardList'
@@ -8,9 +8,9 @@ import Firebase from '../Firebase';
 
 export default class SubjectDetailScreen extends Component {
 
-    state = { cardLists: [], isLoading: true, showCreateCardListScreen: false };
+    state = { subject: {}, cardLists: [], isLoading: true, showCreateCardListScreen: false };
 
-    // set subject title at runtime// titel zur Laufzeit setzen
+    // set subject title at runtime
     static navigationOptions = ({ navigation }) => {
         const subject = navigation.getParam('subject');
         return {
@@ -29,7 +29,9 @@ export default class SubjectDetailScreen extends Component {
             // save quote within sql lite database
             this._saveCardListToDB(name, desc, examDate, cardLists);
         } else {
-            alert("Please set name for CardList");
+            Alert.alert('CardList name is empty',
+                'Please enter a CardList name',
+                [{ text: 'OK', style: 'cancel' }]);
         }
         this.setState({ cardLists, showCreateCardListScreen: false });
     }
@@ -37,14 +39,17 @@ export default class SubjectDetailScreen extends Component {
     /* save cardList to firebase DB */
     _saveCardListToDB = async (name, desc, examDate, cardLists) => {
 
+        let { subject } = this.state;
+
         try {
-            // save data to database collection subjects
-            docRef = await Firebase.db.collection('cardList').add({ name, desc, examDate });
+            // save data to database collection card lists            
+            docRef = await Firebase.db.collection('user').doc(subject.userData.email).collection('subjects').doc(subject.name).collection('cardLists').add({ name, desc, examDate });
             // set new generated id to array entry
-            cardLists[subjects.length - 1].id = docRef.id;
+            cardLists[cardLists.length - 1].id = docRef.id;
         } catch (error) {
             alert('No internet connection');
         }
+        this.setState({ cardLists });
     }
 
     /* refreshing list after swipe down */
@@ -56,9 +61,13 @@ export default class SubjectDetailScreen extends Component {
     /* retrieve card lists from database */
     _retrieveCardLists = async () => {
 
+        // get active subject        
+        let subject = this.props.navigation.getParam('subject');
+
         let cardLists = [];
-        // read data asynchron from friebase db
-        let query = await Firebase.db.collection('cardLists').get();
+        // read data asynchron from firebase db                
+        let query = await Firebase.db.collection('user').doc(subject.userData.email).collection('subjects').doc(subject.name).collection('cardLists').get();
+
         // add every read entry to array of subjects
         query.forEach(cardList => {
             cardLists.push({
@@ -68,8 +77,9 @@ export default class SubjectDetailScreen extends Component {
                 examDate: cardList.data().examDate
             });
         });
+
         // neuen state setzen und loading indicator false setzen
-        this.setState({ cardLists, isLoading: false });
+        this.setState({ subject, cardLists, isLoading: false });
     }
 
     /* called after view is called */
@@ -103,7 +113,7 @@ export default class SubjectDetailScreen extends Component {
                         onRefresh={this._refresh}
                         renderItem={({ item }) => (
                             // render CardListItems
-                            <CardListItem cardList={item} onPress={() => this.props.navigation.navigate('CardListItem', {
+                            <CardListItem cardList={item} onPress={() => this.props.navigation.navigate('CardListScreen', {
                                 cardList: item
                             })}></CardListItem>
                         )}

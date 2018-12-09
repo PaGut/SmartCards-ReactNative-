@@ -11,8 +11,8 @@ export default function (props) {
                 <View style={styles.infoColumn}>
                     <View style={styles.infoRow}>
                         <Text style={styles.text}>{cardList.name}</Text>
-                        <Text style={styles.text}>{cardList.examDate}</Text>
                     </View>
+                    <Text style={styles.text}>{cardList.examDate}</Text>
                     <Text style={styles.text}>{cardList.desc}</Text>
                 </View>
             </View>

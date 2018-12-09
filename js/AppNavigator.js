@@ -2,11 +2,11 @@
 import React from 'react';
 import { Platform, StatusBar } from "react-native";
 import { createStackNavigator, createBottomTabNavigator, createAppContainer, createSwitchNavigator } from 'react-navigation'
-// Screens
+// App Screen stack
 import SubjectListScreen from './screens/SubjectListScreen';
 import SubjectDetailScreen from './screens/SubjectDetailScreen';
-import SettingsScreen from './screens/SettingsScreen';
-// sign in screen stack
+import CardListScreen from './screens/CardListScreen';
+// Sign In Screen stack
 import SignUp from "./login/SignUp";
 import SignIn from "./login/SignIn";
 import Profile from "./screens/Profile";
@@ -18,7 +18,7 @@ const headerStyle = {
 };
 
 // Name der Routen
-const HomeStack = createStackNavigator({ SubjectListScreen, SubjectDetailScreen }, {
+const HomeStack = createStackNavigator({ SubjectListScreen, SubjectDetailScreen, CardListScreen }, {
     defaultNavigationOptions: {
         headerStyle: {
             backgroundColor: 'aliceblue',
