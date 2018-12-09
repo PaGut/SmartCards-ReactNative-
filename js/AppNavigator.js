@@ -2,11 +2,11 @@
 import React from 'react';
 import { Platform, StatusBar } from "react-native";
 import { createStackNavigator, createBottomTabNavigator, createAppContainer, createSwitchNavigator } from 'react-navigation'
-// Screens
+// App Screen stack
 import SubjectListScreen from './screens/SubjectListScreen';
 import SubjectDetailScreen from './screens/SubjectDetailScreen';
-import SettingsScreen from './screens/SettingsScreen';
-// sign in screen stack
+import CardListScreen from './screens/CardListScreen';
+// Sign In Screen stack
 import SignUp from "./login/SignUp";
 import SignIn from "./login/SignIn";
 import Profile from "./screens/Profile";
@@ -17,8 +17,13 @@ const headerStyle = {
     marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
 };
 
+<<<<<<< HEAD
 // name of routs
 const HomeStack = createStackNavigator({ SubjectListScreen, SubjectDetailScreen }, {
+=======
+// Name der Routen
+const HomeStack = createStackNavigator({ SubjectListScreen, SubjectDetailScreen, CardListScreen }, {
+>>>>>>> 88e191aaaf7f61d8123087e6e7a717cdc45dd486
     defaultNavigationOptions: {
         headerStyle: {
             backgroundColor: 'aliceblue',

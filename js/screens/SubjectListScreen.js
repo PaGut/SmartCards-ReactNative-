@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, ActivityIndicator, FlatList, Text, View, Button, TouchableOpacity } from 'react-native';
+import { Alert, StyleSheet, ActivityIndicator, FlatList, Text, View, Button, TouchableOpacity } from 'react-native';
 // import custom components
 import SubjectListItem from '../components/SubjectListItem'
 import NewSubject from '../components/NewSubject'
@@ -13,45 +13,56 @@ export default class SubjectListScreen extends Component {
 
     // set header toolbar title
     static navigationOptions = {
-        title: "Smart Cards"
+        title: "Subjects"
     }
 
     /* retrieve subjects from database */
     _retrieveSubjects = async () => {
 
+        // get user data
+        const userData = this.props.navigation.getParam('userData');
+
         let subjects = [];
-        // read data asynchron from friebase db
-        let query = await Firebase.db.collection('subjects').get();
+        // read data asynchron from friebase db for specific user   
+        let query = await Firebase.db.collection('user').doc(userData.email).collection('subjects').get();
         // add every read entry to array of subjects
         query.forEach(subject => {
             subjects.push({
                 id: subject.id,
-                name: subject.data().name
+                name: subject.data().name,
+                userData: subject.data().userData
             });
         });
         // neuen state setzen und loading indicator false setzen
-        this.setState({ subjects, isLoading: false });
+        this.setState({ userData, subjects, isLoading: false });
     }
 
     /* add new subject to list */
     _addSubject = (name) => {
-        let { subjects } = this.state;
+
+        let { userData, subjects } = this.state;
+
         // check if subject is not empty
         if (name) {
             // set subject name
-            subjects.push({ name: name });
+            subjects.push({ name: name, userData: userData });
             // save quote within sql lite database
-            this._saveSubjectToDB(name, subjects);
+            this._saveSubjectToDB(userData, name, subjects);
+        } else {
+            // open alert popup
+            Alert.alert('Subject name empty',
+                'Please enter a subject name',
+                [{ text: 'OK' }, { text: 'Cancel', style: 'cancel' }]);
         }
         this.setState({ subjects, showCreateSubjectScreen: false });
     };
 
     /* save subjects to firebase DB */
-    _saveSubjectToDB = async (name, subjects) => {
+    _saveSubjectToDB = async (userData, name, subjects) => {
 
         try {
-            // save data to database collection subjects
-            docRef = await Firebase.db.collection('subjects').add({ name });
+            // add subject to specific user collection
+            docRef = await Firebase.db.collection('user').doc(userData.email).collection('subjects').add({ name, userData });
             // set new generated id to array entry
             subjects[subjects.length - 1].id = docRef.id;
         } catch (error) {
@@ -69,10 +80,6 @@ export default class SubjectListScreen extends Component {
     componentDidMount() {
         // init firebase object        
         Firebase.init();
-        // set user data 
-        debugger;
-        const userData = this.props.navigation.getParam('userData');
-        this.setState({ userData: userData });
         // get subjects for active user from firebase db
         this._retrieveSubjects();
     }
