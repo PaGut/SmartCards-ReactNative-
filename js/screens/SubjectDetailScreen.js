@@ -92,7 +92,9 @@ export default class SubjectDetailScreen extends Component {
                 id: cardList.id,
                 name: cardList.data().name,
                 desc: cardList.data().desc,
-                examDate: cardList.data().examDate
+                examDate: cardList.data().examDate,
+                subjectData: subject
+
             });
         });
         // neuen state setzen und loading indicator false setzen

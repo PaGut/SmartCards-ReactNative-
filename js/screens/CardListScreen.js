@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import { Alert, ActivityIndicator, Dimensions, View, FlatList, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 // import database
 import Firebase from '../Firebase';
+// import Card
+import Card from '../components/Card';
 
 export default class CardListScreen extends Component {
 
-    state = { cards: [], isLoading: true };
+    state = { cardList: {}, cards: [], isLoading: true };
 
     // set cardList title at runtime
     static navigationOptions = ({ navigation }) => {
@@ -15,10 +17,6 @@ export default class CardListScreen extends Component {
             title: cardList.name
         };
     };
-
-    _retrieveCardList = async () => {
-        //Liste der Karteikarten aus der Firebase laden
-    }
 
     render() {
         if (this.state.isLoading) {
@@ -31,51 +29,69 @@ export default class CardListScreen extends Component {
         let cardList = this.props.navigation.getParam('cardList');
 
         return (
-            <ScrollView style={styles.container} >
+            <View style={styles.container} >
 
 
-                <FlatList>
-
-                </FlatList>
-
-                {/* <FlatList
+                <FlatList
                     data={this.state.cards}
-                    keyExtractor={item => item.name}
+                    keyExtractor={item => item.id}
                     ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
                     ListEmptyComponent={() => (<Text style={styles.listEmpty}>No Data</Text>)}
                     refreshing={this.state.isLoading}
                     onRefresh={this._refresh}
                     renderItem={({ item }) => (
-                        // render SubjectListItems
-                        <CardListItem subject={item} onPress={() => this.props.navigation.navigate('CardDetailScreen', {
-                            cards: item
-                        })}></CardListItem>
+                        // render CardListItems
+                        <Card card={item} onPress={() => this.console.log("test")} />
                     )}
-                /> */}
 
-            </ScrollView>
+                >
+
+                </FlatList>
+
+
+            </View>
 
         );
     }
-
 
     // Called after the view is loaded
     componentDidMount() {
         // init firebase
         Firebase.init();
+        debugger;
         // get the cards of the current deck
         this._retrieveCards();
     }
     // Get cards from database
     _retrieveCards = async () => {
-        let cards = this.props.navigation.getParam('cards');
+        let cardList = this.props.navigation.getParam('cardList');
+
+        let cards = [];
+        let email = cardList.subjectData.userData.email;
+        let subjectName = cardList.subjectData.name;
+        console.log(email);
+        // read data asynchron from firebase db for specific cardList   
+        let query = await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('cardLists').doc(cardList.id).collection('cards').get();
+        console.log("hier");
+        // add every read entry to array of cards
+        query.forEach(card => {
+            cards.push({
+                id: card.id,
+                question: card.data().question,
+                answer: card.data().answer,
+                cardData: cardList
+            });
+        });
+        // neuen state setzen und loading indicator false setzen
+        this.setState({ cardList, cards, isLoading: false });
+
     }
 }
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        backgroundColor: 'red',
+        backgroundColor: 'white',
     },
     listSeparator: {
         height: StyleSheet.hairlineWidth,
