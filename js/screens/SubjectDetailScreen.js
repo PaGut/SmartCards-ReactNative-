@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, ActivityIndicator, Dimensions, View, FlatList, TouchableOpacity, ScrollView, StyleSheet, Text } from 'react-native';
+import { Alert, ActivityIndicator, Button, Dimensions, View, FlatList, ScrollView, StyleSheet, Text } from 'react-native';
 // import custom components
 import CardListItem from '../components/CardListItem'
 import NewCardList from '../components/NewCardList'
@@ -14,9 +14,26 @@ export default class SubjectDetailScreen extends Component {
     static navigationOptions = ({ navigation }) => {
         const subject = navigation.getParam('subject');
         return {
-            title: subject.name
+            title: subject.name,
+            headerRight: (
+                <Button
+                    onPress={navigation.getParam('setCreateCardListScreen')}
+                    title="Create"
+                    color="lightsalmon"
+                />
+            )
         };
     };
+
+    // hide creation card list screen
+    _closeCreateCardListScreen = () => {
+        this.setState({ showCreateCardListScreen: false });
+    }
+
+    // show creation card list screen
+    _setCreateCardListScreen = () => {
+        this.setState({ showCreateCardListScreen: true });
+    }
 
     /* add new subject to list */
     _addCardList = (name, desc, examDate) => {
@@ -82,8 +99,29 @@ export default class SubjectDetailScreen extends Component {
         this.setState({ subject, cardLists, isLoading: false });
     }
 
+    /* delete selected card list item from firebase DB */
+    _deleteCardListItem = async (deleteRow) => {
+
+        let { subject } = this.state;
+
+        try {
+            // add subject to specific user collection
+            docRef = await Firebase.db.collection('user').doc(subject.userData.email).collection('subjects').doc(subject.name).collection('cardLists').doc(deleteRow).delete();
+            // set new generated id to array entry
+            this.setState({ isLoading: true });
+            this._retrieveCardLists();
+
+            //subjects[subjects.length - 1].id = docRef.id;
+        } catch (error) {
+            alert('CardList does not exist');
+        }
+    }
+
+
     /* called after view is called */
     componentDidMount() {
+        // set function to static navigation option parameter
+        this.props.navigation.setParams({ setCreateCardListScreen: this._setCreateCardListScreen });
         // init firebase object        
         Firebase.init();
         // get cardLists for active user from firebase db
@@ -100,30 +138,25 @@ export default class SubjectDetailScreen extends Component {
                 </View>
             )
         }
-
+        debugger;
         return (
             <ScrollView contentContainerStyle={styles.container} style={styles.scrollView}>
                 <View style={styles.container}>
                     <FlatList
                         data={this.state.cardLists}
-                        keyExtractor={item => item.name}
+                        keyExtractor={item => item.id}
                         ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
                         ListEmptyComponent={() => (<Text style={styles.listEmpty}>No Data</Text>)}
                         refreshing={this.state.isLoading}
                         onRefresh={this._refresh}
-                        renderItem={({ item }) => (
+                        renderItem={({ item, index }) => (
                             // render CardListItems
-                            <CardListItem cardList={item} onPress={() => this.props.navigation.navigate('CardListScreen', {
+                            <CardListItem cardList={item} index={index} onDelete={this._deleteCardListItem} onPress={() => this.props.navigation.navigate('CardListScreen', {
                                 cardList: item
                             })}></CardListItem>
                         )}
                     />
-                    <View style={styles.createbuttonContainer}>
-                        <TouchableOpacity style={styles.createButton} onPress={() => this.setState({ showCreateCardListScreen: true })}>
-                            <Text style={styles.createButtonText}>Create New CardList</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <NewCardList visible={this.state.showCreateCardListScreen} onSave={this._addCardList} />
+                    <NewCardList visible={this.state.showCreateCardListScreen} onSave={this._addCardList} onCancel={this._closeCreateCardListScreen} />
                 </View >
             </ScrollView>
         );
@@ -148,25 +181,6 @@ const styles = StyleSheet.create({
         paddingTop: 100,
         fontSize: 30,
         textAlign: 'center'
-    },
-    createbuttonContainer: {
-        backgroundColor: 'white'
-    },
-    createButton: {
-        marginTop: 10,
-        marginHorizontal: 20,
-        borderTopWidth: 1,
-        borderColor: "lightsalmon",
-        backgroundColor: "lightsalmon",
-        alignItems: 'center',
-        paddingVertical: 15,
-        borderRadius: 40,
-        marginBottom: 10
-    },
-    createButtonText: {
-        textAlign: 'center',
-        color: 'white',
-        fontWeight: 'bold'
     }
 });
 

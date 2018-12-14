@@ -1,14 +1,52 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, Button, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
+import DatePicker from 'react-native-datepicker';
+
 
 export default class NewCardList extends Component {
 
-    state = { name: null, desc: null, examDate: null };
+    state = { name: null, desc: null, examDate: new Date(), saveDisabled: true };
+
+    _setDate = (newDate) => {
+        this.setState({ examDate: newDate })
+    }
+
+    onSavePressed = (name, desc, examDate) => {
+        // call save property
+        this.props.onSave(name, desc, examDate);
+        // reset value for cardList name
+        this.setState({ name: null, desc: null, examDate: null });
+    }
+
+    onCancelPressed = () => {
+        this.props.onCancel();
+        this.setState({ name: null, desc: null, examDate: null, saveDisabled: true });
+    }
+
+    _inputChanged = (value) => {
+        debugger;
+        // set new value
+        this.setState({ name: value });
+        // check if value is not initial
+        debugger;
+        if (value === "") {
+            this.setState({ saveDisabled: true });
+        } else {
+            this.setState({ saveDisabled: false });
+        }
+    }
 
     render() {
 
         const { visible, onSave } = this.props;
-        const { name, desc, examDate } = this.state;
+        const { name, desc, examDate, saveDisabled } = this.state;
+
+        // set dynamic color of save button for disabled
+        var saveBtnStyle = StyleSheet.create({
+            color: {
+                backgroundColor: saveDisabled ? 'transparent' : 'lightsalmon'
+            }
+        });
 
         return (
             <Modal visible={visible} onRequestClose={() => {
@@ -18,21 +56,42 @@ export default class NewCardList extends Component {
                 <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
                     <Text style={styles.text}>Create New CardList</Text>
                     <TextInput style={[styles.input, { height: 80 }]} placeholder="Enter name" multiline={false}
-                        underlineColorAndroid="transparent" onChangeText={(value) => this.setState({ name: value })}>
+                        underlineColorAndroid="transparent" onChangeText={(value) => this._inputChanged(value)}>
                     </TextInput>
                     <TextInput style={[styles.input, { height: 80 }]} placeholder="Enter description" multiline={false}
                         underlineColorAndroid="transparent" onChangeText={(value) => this.setState({ desc: value })}>
                     </TextInput>
-                    <TextInput style={[styles.input, { height: 80 }]} placeholder="Enter exam date" multiline={false}
-                        underlineColorAndroid="transparent" onChangeText={(value) => this.setState({ examDate: value })}>
-                    </TextInput>
-                    <Button title="Save"
-                        onPress={() => {
-                            // reset value for subject name
-                            this.setState({ name: null, desc: null, examDate: null });
-                            // call save property
-                            onSave(name, desc, examDate);
-                        }} />
+                    <DatePicker
+                        style={styles.datePicker}
+                        date={this.state.examDate}
+                        mode="date"
+                        placeholder="Select date"
+                        format="YYYY-MM-DD"
+                        minDate="2018-01-01"
+                        maxDate="2020-12-31"
+                        confirmBtnText="Confirm"
+                        cancelBtnText="Cancel"
+                        customStyles={{
+                            dateIcon: {
+                                position: 'absolute',
+                                left: 0,
+                                top: 4,
+                                marginLeft: 0
+                            },
+                            dateInput: {
+                                marginLeft: 36
+                            }
+                        }}
+                        onDateChange={(newDate) => { this.setState({ examDate: newDate }) }}
+                    />
+                    <View>
+                        <TouchableOpacity disabled={saveDisabled} style={[styles.button, saveBtnStyle.color]} onPress={() => this.onSavePressed(name, desc, examDate)}>
+                            <Text style={styles.buttonText}>Save</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.button} onPress={() => this.onCancelPressed()}>
+                            <Text style={styles.buttonText}>Cancel</Text>
+                        </TouchableOpacity>
+                    </View>
                 </KeyboardAvoidingView>
             </Modal >
         );
@@ -59,6 +118,31 @@ const styles = StyleSheet.create({
         fontSize: 20,
         padding: 10,
         height: 50,
+        marginBottom: 20
+    },
+    datePicker: {
+        borderWidth: 1,
+        borderColor: 'lightsalmon',
+        borderRadius: 4,
         marginBottom: 20,
+        width: 300
+    },
+    button: {
+        width: 300,
+        marginTop: 10,
+        marginHorizontal: 20,
+        backgroundColor: "lightsalmon",
+        alignItems: 'center',
+        paddingVertical: 15,
+        borderRadius: 40,
+        marginBottom: 10
+    },
+    buttonText: {
+        textAlign: 'center',
+        color: 'white',
+        fontWeight: 'bold'
+    },
+    cancelButton: {
+        marginTop: 200
     }
 });
