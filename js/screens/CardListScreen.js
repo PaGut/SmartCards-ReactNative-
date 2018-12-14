@@ -28,6 +28,8 @@ export default class CardListScreen extends Component {
                 </View>);
         }
 
+        let cardList = this.props.navigation.getParam('cardList');
+
         return (
             <ScrollView style={styles.container} >
 
@@ -52,6 +54,7 @@ export default class CardListScreen extends Component {
                 /> */}
 
             </ScrollView>
+
         );
     }
 
