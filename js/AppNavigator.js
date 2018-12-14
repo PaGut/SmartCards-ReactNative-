@@ -17,13 +17,8 @@ const headerStyle = {
     marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
 };
 
-<<<<<<< HEAD
-// name of routs
-const HomeStack = createStackNavigator({ SubjectListScreen, SubjectDetailScreen }, {
-=======
 // Name der Routen
 const HomeStack = createStackNavigator({ SubjectListScreen, SubjectDetailScreen, CardListScreen }, {
->>>>>>> 88e191aaaf7f61d8123087e6e7a717cdc45dd486
     defaultNavigationOptions: {
         headerStyle: {
             backgroundColor: 'aliceblue',
@@ -82,6 +77,7 @@ export default createAppContainer(createSwitchNavigator(
         //AuthLoading: AuthLoadingScreen,
         App: AppStack,
         Auth: AuthStack,
+
     },
     {
         initialRouteName: 'Auth',
