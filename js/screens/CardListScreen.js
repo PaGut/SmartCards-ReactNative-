@@ -5,7 +5,6 @@ import Firebase from '../Firebase';
 
 export default class CardListScreen extends Component {
 
-
     // set cardList title at runtime
     static navigationOptions = ({ navigation }) => {
         const cardList = navigation.getParam('cardList');
@@ -22,9 +21,11 @@ export default class CardListScreen extends Component {
 
     render() {
 
+        let cardList = this.props.navigation.getParam('cardList');
+
         return (
             <View style={styles.container}>
-                <Text>Dann Hau mal rein :D</Text>
+                <Text>cardList.name</Text>
             </View>
         );
     }

@@ -95,14 +95,9 @@ export default class SubjectDetailScreen extends Component {
                 examDate: cardList.data().examDate
             });
         });
-<<<<<<< HEAD
-        // set new state and set loading indicator to false
-        this.setState({ cardLists, isLoading: false });
-=======
 
         // neuen state setzen und loading indicator false setzen
         this.setState({ subject, cardLists, isLoading: false });
->>>>>>> 88e191aaaf7f61d8123087e6e7a717cdc45dd486
     }
 
     /* delete selected card list item from firebase DB */
