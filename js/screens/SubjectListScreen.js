@@ -12,8 +12,22 @@ export default class SubjectListScreen extends Component {
     state = { userData: {}, showCreateSubjectScreen: false, subjects: [], isLoading: true };
 
     // set header toolbar title
-    static navigationOptions = {
-        title: "Subjects"
+    static navigationOptions = ({ navigation }) => {
+        return {
+            title: "Subjects",
+            headerRight: (
+                <Button
+                    onPress={navigation.getParam('setCreateSubjectScreen')}
+                    title="Create"
+                    color="lightsalmon"
+                />
+            )
+        }
+    }
+
+    // set subject create screen
+    _setCreateSubjectScreen = () => {
+        this.setState({ showCreateSubjectScreen: true });
     }
 
     /* retrieve subjects from database */
@@ -48,11 +62,6 @@ export default class SubjectListScreen extends Component {
             subjects.push({ name: name, userData: userData });
             // save quote within sql lite database
             this._saveSubjectToDB(userData, name, subjects);
-        } else {
-            // open alert popup
-            Alert.alert('Subject name empty',
-                'Please enter a subject name',
-                [{ text: 'OK' }, { text: 'Cancel', style: 'cancel' }]);
         }
         this.setState({ subjects, showCreateSubjectScreen: false });
     };
@@ -70,14 +79,38 @@ export default class SubjectListScreen extends Component {
         }
     }
 
+    /* delete selected subject from firebase DB */
+    _deleteSubjectItem = async (deleteRow) => {
+
+        let { userData } = this.state;
+
+        try {
+            // add subject to specific user collection
+            docRef = await Firebase.db.collection('user').doc(userData.email).collection('subjects').doc(deleteRow).delete();
+            // set new generated id to array entry
+            this.setState({ isLoading: true });
+            this._retrieveSubjects();
+
+            //subjects[subjects.length - 1].id = docRef.id;
+        } catch (error) {
+            alert('Subject does not exist');
+        }
+    }
+
     // refreshing list after swipe down
     _refresh = () => {
         this.setState({ isLoading: true });
         this._retrieveSubjects();
     }
 
+    _closeCreationScreen = () => {
+        this.setState({ showCreateSubjectScreen: false });
+    }
+
     /* called after view is called */
     componentDidMount() {
+        // set function to static navigation option parameter
+        this.props.navigation.setParams({ setCreateSubjectScreen: this._setCreateSubjectScreen });
         // init firebase object        
         Firebase.init();
         // get subjects for active user from firebase db
@@ -105,19 +138,14 @@ export default class SubjectListScreen extends Component {
                     ListEmptyComponent={() => (<Text style={styles.listEmpty}>No Data</Text>)}
                     refreshing={this.state.isLoading}
                     onRefresh={this._refresh}
-                    renderItem={({ item }) => (
+                    renderItem={({ item, index }) => (
                         // render SubjectListItems
-                        <SubjectListItem subject={item} onPress={() => this.props.navigation.navigate('SubjectDetailScreen', {
+                        <SubjectListItem subject={item} index={index} onDelete={this._deleteSubjectItem} onPress={() => this.props.navigation.navigate('SubjectDetailScreen', {
                             subject: item
                         })}></SubjectListItem>
                     )}
                 />
-                <View style={styles.createbuttonContainer}>
-                    <TouchableOpacity style={styles.createButton} onPress={() => this.setState({ showCreateSubjectScreen: true })}>
-                        <Text style={styles.createButtonText}>Create New Subject</Text>
-                    </TouchableOpacity>
-                </View>
-                <NewSubject visible={this.state.showCreateSubjectScreen} onSave={this._addSubject} />
+                <NewSubject visible={this.state.showCreateSubjectScreen} onSave={this._addSubject} onCancel={this._closeCreationScreen} />
             </View >
         );
     }
@@ -138,25 +166,6 @@ const styles = StyleSheet.create({
         paddingTop: 100,
         fontSize: 30,
         textAlign: 'center'
-    },
-    createbuttonContainer: {
-        backgroundColor: 'white'
-    },
-    createButton: {
-        marginTop: 10,
-        marginHorizontal: 20,
-        borderTopWidth: 1,
-        borderColor: "lightsalmon",
-        backgroundColor: "lightsalmon",
-        alignItems: 'center',
-        paddingVertical: 15,
-        borderRadius: 40,
-        marginBottom: 10
-    },
-    createButtonText: {
-        textAlign: 'center',
-        color: 'white',
-        fontWeight: 'bold'
     }
 });
 

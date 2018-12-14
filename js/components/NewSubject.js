@@ -1,15 +1,48 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, Button, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, View, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
 
 export default class NewSubject extends Component {
 
-    state = { name: null };
+    state = { name: null, saveDisabled: true };
+
+    _savePressed = (name) => {
+        // call save property
+        this.props.onSave(name);
+        // reset value for subject name
+        this.setState({ name: null, saveDisabled: false });
+    }
+
+    _inputChanged = (value) => {
+        debugger;
+        // set new value
+        this.setState({ name: value });
+        // check if value is not initial
+        debugger;
+        if (value === "") {
+            this.setState({ saveDisabled: true });
+        } else {
+            this.setState({ saveDisabled: false });
+        }
+    }
+
+    onCancelPressed = () => {
+        this.props.onCancel();
+        this.setState({ name: null, saveDisabled: true });
+    }
 
     render() {
 
-        const { visible, onSave } = this.props;
-        const { name } = this.state;
+        const { visible, onSave, onCancel } = this.props;
+        const { name, saveDisabled } = this.state;
 
+        // set dynamic color of save button for disabled
+        var saveBtnStyle = StyleSheet.create({
+            color: {
+                backgroundColor: saveDisabled ? 'transparent' : 'lightsalmon'
+            }
+        });
+
+        debugger;
         return (
             <Modal visible={visible} onRequestClose={() => {
                 this.setState({ name: null });
@@ -18,15 +51,16 @@ export default class NewSubject extends Component {
                 <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
                     <Text style={styles.text}>Create New Subject</Text>
                     <TextInput style={[styles.input, { height: 150 }]} placeholder="Subject Name" multiline={false}
-                        underlineColorAndroid="transparent" onChangeText={(value) => this.setState({ name: value })}>
+                        underlineColorAndroid="transparent" onChangeText={(value) => this._inputChanged(value)}>
                     </TextInput>
-                    <Button title="Save"
-                        onPress={() => {
-                            // reset value for subject name
-                            this.setState({ name: null });
-                            // call save property
-                            onSave(name);
-                        }} />
+                    <View>
+                        <TouchableOpacity disabled={saveDisabled} style={[styles.button, saveBtnStyle.color]} onPress={() => this._savePressed(name)}>
+                            <Text style={styles.buttonText}>Save</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.button} onPress={() => this.onCancelPressed()}>
+                            <Text style={styles.buttonText}>Cancel</Text>
+                        </TouchableOpacity>
+                    </View>
                 </KeyboardAvoidingView>
             </Modal >
         );
@@ -53,5 +87,23 @@ const styles = StyleSheet.create({
         fontSize: 20,
         padding: 10,
         height: 50
+    },
+    button: {
+        width: 300,
+        marginTop: 10,
+        marginHorizontal: 20,
+        backgroundColor: "lightsalmon",
+        alignItems: 'center',
+        paddingVertical: 15,
+        borderRadius: 40,
+        marginBottom: 10
+    },
+    buttonText: {
+        textAlign: 'center',
+        color: 'white',
+        fontWeight: 'bold'
+    },
+    cancelButton: {
+        marginTop: 200
     }
 });
