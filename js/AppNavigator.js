@@ -6,6 +6,7 @@ import { createStackNavigator, createBottomTabNavigator, createAppContainer, cre
 import SubjectListScreen from './screens/SubjectListScreen';
 import SubjectDetailScreen from './screens/SubjectDetailScreen';
 import CardListScreen from './screens/CardListScreen';
+import CardScreen from './screens/CardScreen';
 // Sign In Screen stack
 import SignUp from "./login/SignUp";
 import SignIn from "./login/SignIn";
@@ -18,7 +19,7 @@ const headerStyle = {
 };
 
 // Name der Routen
-const HomeStack = createStackNavigator({ SubjectListScreen, SubjectDetailScreen, CardListScreen }, {
+const HomeStack = createStackNavigator({ SubjectListScreen, SubjectDetailScreen, CardListScreen, CardScreen }, {
     defaultNavigationOptions: {
         headerStyle: {
             backgroundColor: 'aliceblue',

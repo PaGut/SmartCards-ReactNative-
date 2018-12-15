@@ -140,7 +140,7 @@ export default class SubjectDetailScreen extends Component {
                 </View>
             )
         }
-        debugger;
+
         return (
             <ScrollView contentContainerStyle={styles.container} style={styles.scrollView}>
                 <View style={styles.container}>
@@ -159,14 +159,11 @@ export default class SubjectDetailScreen extends Component {
                         )}
                     />
                     <NewCardList visible={this.state.showCreateCardListScreen} onSave={this._addCardList} onCancel={this._closeCreateCardListScreen} />
-                </View >
+                </View>
             </ScrollView>
         );
     }
 }
-
-//Calculate width dynamically according to window-width
-const width = Dimensions.get('window').width * 0.75;
 
 const styles = StyleSheet.create({
     container: {
