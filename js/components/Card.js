@@ -6,6 +6,7 @@ export default class Card extends Component {
 
     render() {
         return (
+            
             <Text>{this.props.card.question}</Text>
         )
     }
