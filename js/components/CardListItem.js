@@ -10,7 +10,6 @@ export default class CardListItem extends Component {
     }
 
     render() {
-        debugger;
         const { cardList, onPress, onDelete } = this.props;
 
         const swipeSettings = {

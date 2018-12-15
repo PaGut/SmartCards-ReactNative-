@@ -140,7 +140,7 @@ export default class SubjectDetailScreen extends Component {
                 </View>
             )
         }
-        debugger;
+        
         return (
             <ScrollView contentContainerStyle={styles.container} style={styles.scrollView}>
                 <View style={styles.container}>
