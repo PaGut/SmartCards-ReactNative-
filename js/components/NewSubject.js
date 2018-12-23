@@ -42,7 +42,6 @@ export default class NewSubject extends Component {
             }
         });
 
-        debugger;
         return (
             <Modal visible={visible} onRequestClose={() => {
                 this.setState({ name: null });

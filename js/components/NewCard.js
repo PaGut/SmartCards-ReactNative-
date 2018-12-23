@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
+import { Camera, Permissions } from 'expo';
+// import custom components
+import CameraScreen from '../camera/CameraScreen'
 
 export default class NewCard extends Component {
 
-    state = { question: null, answer: null, saveDisabled: true };
+    state = { question: null, answer: null, saveDisabled: true, hasCameraPermission: null, showCameraScreen: false };
 
     onSavePressed = (question, answer) => {
         //call save property
@@ -17,10 +20,18 @@ export default class NewCard extends Component {
         this.setState({ question: null, answer: null, saveDisabled: true });
     }
 
+    _closeCameraScreen = () => {
+        this.setState({ showCameraScreen: false });
+    }
+
+    async componentDidMount() {
+        const { status } = await Permissions.askAsync(Permissions.CAMERA);
+        this.setState({ hasCameraPermission: status === 'granted' });
+    }
 
     render() {
         const { visible, onSave } = this.props;
-        const { question, answer, saveDisabled } = this.state;
+        const { question, answer, saveDisabled, hasCameraPermission, showCameraScreen } = this.state;
 
         // set dynamic color of save button for disabled
         var saveBtnStyle = StyleSheet.create({
@@ -47,20 +58,20 @@ export default class NewCard extends Component {
                         <TouchableOpacity disabled={saveDisabled} style={[styles.button, saveBtnStyle.color]} onPress={() => this.onSavePressed(question, answer)}>
                             <Text style={styles.buttonText}>Save</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.button]} onPress={() => console.log("Photo")}>
+                        <TouchableOpacity style={[styles.button]} onPress={() => this.setState({ showCameraScreen: true })}>
                             <Text style={styles.buttonText}>photo icon</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.button} onPress={() => this.onCancelPressed()}>
                             <Text style={styles.buttonText}>Cancel</Text>
                         </TouchableOpacity>
+                        <CameraScreen visible={showCameraScreen} onClose={this._closeCameraScreen} />
                     </View>
                 </KeyboardAvoidingView>
             </Modal>
 
         );
-
-
     }
+
     _inputChanged = (value) => {
         //change the state
         this.setState({ question: value });

@@ -1,31 +1,108 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, View, StyleSheet, Text } from 'react-native';
+import { TouchableOpacity, Button, View, StyleSheet, Text } from 'react-native';
 import CardFlip from 'react-native-card-flip';
 // import database
 import Firebase from '../Firebase';
 
 export default class CardScreen extends Component {
 
-    state = { cards: {}, activeCard: null };
+    state = { cards: [], activeCard: null, question: null, answer: null, currentCount: null, maxCount: null, editMode: false };
 
     // define card header at runtime
     static navigationOptions = ({ navigation }) => {
-        const card = navigation.getParam('card');
+        debugger;
+        var title = navigation.getParam('title');
+        if (title === undefined) {
+            title = "";
+        }
+
+        var buttonTitle = navigation.getParam('modeButtonTitle');
+        if (buttonTitle === undefined) {
+            buttonTitle = "View";
+        }
+
         return {
-            title: "TestName"
+            title: title,
+            headerRight: (
+                <Button
+                    onPress={navigation.getParam('setEditMode')}
+                    title={buttonTitle}
+                    color="lightsalmon"
+                />
+            )
         };
     };
 
+    // set view mode edit/display
+    _setEditMode = () => {
+        debugger;
+        let mode;
+        if (this.state.editMode === true) {
+            mode = false;
+        } else {
+            mode = true;
+        }
+        this.setState({ editMode: mode });
+    }
+
+    // set next card
+    _nextCard = () => {
+
+        var { cards, currentCount, maxCount } = this.state;
+        debugger;
+        // check if last entry is reached
+        if (currentCount === cards.length) {
+            currentCount = 0;
+        }
+        // get data for next card
+        let activeCard = cards[currentCount];
+        currentCount = currentCount + 1;
+        // set new state
+        this.setState({ activeCard: activeCard, currentCount: currentCount, question: activeCard.question, answer: activeCard.answer });
+        // set toolbar title counter
+        let sTitle = `${currentCount}/${maxCount}`;
+        this.props.navigation.setParams({ title: sTitle });
+    }
+
+    // set previous card
+    _previousCard = () => {
+
+        let { cards, currentCount, maxCount } = this.state;
+        // check if first card is reached
+        if (currentCount === 1) {
+            currentCount = cards.length + 1;
+        }
+        // get data for previous card
+        let activeCard = cards[currentCount - 2];
+        currentCount = currentCount - 1;
+        this.setState({ activeCard: activeCard, currentCount: currentCount, question: activeCard.question, answer: activeCard.answer });
+        // set toolbar title counter
+        let sTitle = `${currentCount}/${maxCount}`;
+        this.props.navigation.setParams({ title: sTitle });
+    }
+
+    _getIndexOfCurrentCard = (cards, activeCard) => {
+        for (var i = 0; i <= cards.length; i++) {
+            if (cards[i].id === activeCard.id) {
+                // set new count                
+                return i + 1;
+            }
+        }
+    }
+
     // Get all cards from database
     _retrieveCards = async () => {
-        let card = this.props.navigation.getParam('card');
 
-        let email = cardList.subjectData.userData.email;
-        let subjectName = cardList.subjectData.name;
+        let { editMode } = this.state;
+        // get active selected card
+        let activeCard = this.props.navigation.getParam('card');
+        let email = activeCard.cardData.subjectData.userData.email;
+        let subjectName = activeCard.cardData.subjectData.name;
 
         // read data asynchron from firebase db for specific cardList   
-        let query = await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('cardLists').doc(card.id).collection('cards').get();
+        let query = await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('cardLists').doc(activeCard.cardData.id).collection('cards').get();
 
+        let cards = [];
         // add every read entry to array of cards
         query.forEach(card => {
             cards.push({
@@ -34,36 +111,51 @@ export default class CardScreen extends Component {
                 answer: card.data().answer,
             });
         });
-        // set cards array to state
-        this.setState({ cards });
+
+        // set count for current card
+        let currentCount = this._getIndexOfCurrentCard(cards, activeCard);
+        let maxCount = cards.length;
+        // set cards array to state and active card
+        this.setState({ cards: cards, activeCard: activeCard, question: activeCard.question, answer: activeCard.answer, currentCount: currentCount, maxCount: maxCount });
+
+        // set toolbar header title and button title       
+        let sModeButtonTitle;
+        if (editMode === false) {
+            sModeButtonTitle = "Edit";
+        } else {
+            sModeButtonTitle = "View";
+        }
+        let sTitle = `${currentCount}/${maxCount}`;
+        // set title of mode button
+        this.props.navigation.setParams({ modeButtonTitle: sModeButtonTitle, title: sTitle });
     }
 
     /* called after view is called */
     componentDidMount() {
-        // set function to static navigation option parameter
-        //this.props.navigation.setParams({ setCreateCardListScreen: this._setCreateCardListScreen });
         // init firebase object        
         Firebase.init();
+        // set function to static navigation option parameter
+        this.props.navigation.setParams({ setViewMode: this._setEditMode });
         // get the cards of the current deck
         this._retrieveCards();
     }
 
     render() {
 
-        let cardList = this.props.navigation.getParam('card');
+        let { question, answer, currentCount, maxCount } = this.state;
 
         return (
             <View style={styles.container}>
-                <Text style={styles.counter}>1/15</Text>
+                <Text style={styles.counter}>{currentCount}/{maxCount}</Text>
                 <CardFlip style={styles.cardContainer} ref={(card) => this.card = card} >
-                    <TouchableOpacity activeOpacity={1} style={[styles.card, styles.card1]} onPress={() => this.card.flip()} ><Text style={styles.label}>Question</Text></TouchableOpacity>
-                    <TouchableOpacity activeOpacity={1} style={[styles.card, styles.card2]} onPress={() => this.card.flip()} ><Text style={styles.label}>Answer</Text></TouchableOpacity>
+                    <TouchableOpacity activeOpacity={1} style={[styles.card, styles.card1]} onPress={() => this.card.flip()} ><Text style={styles.label}>{question}</Text></TouchableOpacity>
+                    <TouchableOpacity activeOpacity={1} style={[styles.card, styles.card2]} onPress={() => this.card.flip()} ><Text style={styles.label}>{answer}</Text></TouchableOpacity>
                 </CardFlip>
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button} onPress={() => console.log("Previous")}>
+                    <TouchableOpacity style={styles.button} onPress={() => this._previousCard()}>
                         <Text style={styles.buttonText}>Previous</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => console.log("Next")}>
+                    <TouchableOpacity style={styles.button} onPress={() => this._nextCard()}>
                         <Text style={styles.buttonText}>Next</Text>
                     </TouchableOpacity>
                 </View>
@@ -110,7 +202,7 @@ const styles = StyleSheet.create({
     label: {
         lineHeight: 470,
         textAlign: 'center',
-        fontSize: 55,
+        fontSize: 35,
         fontFamily: 'System',
         color: 'white',
         backgroundColor: 'transparent',
