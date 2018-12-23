@@ -119,7 +119,7 @@ export default class CardScreen extends Component {
         return (
             <View style={styles.container} >
                 <TouchableOpacity style={styles.button} onPress={() => this.props.navigation.navigate('CardDetailScreen', {
-                    card: this.state.cards[0], editMode: 'Learn'
+                    card: this.state.cards[0], learnActive: true
                 }
                 )}>
                     <Text style={styles.buttonText}>Start learning</Text>
@@ -134,7 +134,7 @@ export default class CardScreen extends Component {
                     renderItem={({ item }) => (
                         // render CardListItems
                         <Card card={item} onPress={() => this.props.navigation.navigate('CardDetailScreen', {
-                            card: item
+                            card: item, learnActive: false
                         })} />
                     )}
                 >

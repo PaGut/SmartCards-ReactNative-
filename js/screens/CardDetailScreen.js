@@ -29,7 +29,7 @@ export default class CardDetailScreen extends Component {
         }
 
 
-        if (navigation.getParam('editMode') !== 'Learn') {
+        if (navigation.getParam('learnActive') !== true) {
 
             return {
 
@@ -151,11 +151,8 @@ export default class CardDetailScreen extends Component {
         this.props.navigation.setParams({ setViewMode: this._setEditMode });
 
         // set learn mode
-        if (
-            this.props.navigation.getParam('editMode') === 'Learn'
-        ) {
-            this.setState({ learnActive: true })
-        }
+        this.setState({ learnActive: this.props.navigation.getParam('learnActive') });
+
         // get the cards of the current deck
         this._retrieveCards();
 
