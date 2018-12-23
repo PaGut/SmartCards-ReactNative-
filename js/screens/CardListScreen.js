@@ -128,7 +128,7 @@ export default class CardListScreen extends Component {
                     renderItem={({ item }) => (
                         // render CardListItems
                         <Card card={item} onPress={() => this.props.navigation.navigate('CardScreen', {
-                            cardList: item
+                            card: item
                         })} />
                     )}
                 >
