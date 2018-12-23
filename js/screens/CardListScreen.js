@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, ActivityIndicator, Button, View, FlatList, StyleSheet } from 'react-native';
+import { Alert, ActivityIndicator, Button, View, FlatList, StyleSheet, Text } from 'react-native';
 // import database
 import Firebase from '../Firebase';
 // import Card

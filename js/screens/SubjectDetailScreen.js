@@ -9,7 +9,7 @@ import Firebase from '../Firebase';
 export default class SubjectDetailScreen extends Component {
 
     state = { subject: {}, cardLists: [], isLoading: true, showCreateCardListScreen: false };
-
+    debugger;
     // set subject title at runtime
     static navigationOptions = ({ navigation }) => {
         const subject = navigation.getParam('subject');
@@ -41,6 +41,7 @@ export default class SubjectDetailScreen extends Component {
         let { cardLists } = this.state;
         // check if card list name is empty
         if (name) {
+            debugger;
             // set card list data
             cardLists.push({ name: name, desc: desc, examDate: examDate });
             // save quote within sql lite database
@@ -81,7 +82,7 @@ export default class SubjectDetailScreen extends Component {
 
         // get active subject        
         let subject = this.props.navigation.getParam('subject');
-
+        debugger;
         let cardLists = [];
         // read data asynchron from firebase db                
         let query = await Firebase.db.collection('user').doc(subject.userData.email).collection('subjects').doc(subject.name).collection('cardLists').get();

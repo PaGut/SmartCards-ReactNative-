@@ -52,7 +52,7 @@ export default class Card extends Component {
             <Swipeout {...swipeSettings}>
                 <TouchableOpacity onPress={onPress}>
                     <View style={styles.container}>
-                        <Image style={styles.image} source={require("../../assets/folder-flat.png")} />
+                        <Image style={styles.image} source={require("../../assets/Card.png")} />
                         <View style={styles.infoColumn}>
                             <View style={styles.infoRow}>
                                 <Text style={styles.text}>{card.question}</Text>

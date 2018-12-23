@@ -56,7 +56,7 @@ export default class CardListItem extends Component {
                             <View style={styles.infoRow}>
                                 <Text style={styles.text}>{cardList.name}</Text>
                             </View>
-                            <Text style={styles.text}>{cardList.examDate.toString()}</Text>
+                            <Text style={styles.text}>{this._formatDate(cardList.examDate)}</Text>
                             <Text style={styles.text}>{cardList.desc}</Text>
                         </View>
                     </View>
@@ -64,7 +64,21 @@ export default class CardListItem extends Component {
             </Swipeout>
         )
     };
+
+    _formatDate = (date) => {
+
+        // let day = date.getDay();
+        // let month = date.getMonth();
+        // let year = date.getFullYear();
+        debugger;
+        return (
+            date
+        );
+
+    };
+
 }
+
 
 const styles = StyleSheet.create({
     container: {
