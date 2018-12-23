@@ -1,7 +1,13 @@
 import React, { Component } from 'react';
 import { TouchableOpacity, Button, View, StyleSheet, Text } from 'react-native';
 import CardFlip from 'react-native-card-flip';
+
+// Navigation-Buttons for Edit/View Mode
+import CardButtons from '../components/CardButtons';
+
+// Rating-Bar for Learn Mode
 import Rating from '../components/Rating';
+
 // import database
 import Firebase from '../Firebase';
 
@@ -166,14 +172,10 @@ export default class CardDetailScreen extends Component {
                     <TouchableOpacity activeOpacity={1} style={[styles.card, styles.card1]} onPress={() => this.card.flip()} ><Text style={styles.label}>{question}</Text></TouchableOpacity>
                     <TouchableOpacity activeOpacity={1} style={[styles.card, styles.card2]} onPress={() => this.card.flip()} ><Text style={styles.label}>{answer}</Text></TouchableOpacity>
                 </CardFlip>
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button} onPress={() => this._previousCard()}>
-                        <Text style={styles.buttonText}>Previous</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => this._nextCard()}>
-                        <Text style={styles.buttonText}>Next</Text>
-                    </TouchableOpacity>
-                </View>
+                {/* Do not show CardButtons if Learning is active */}
+                <CardButtons hide={this.state.learnActive} />
+
+                {/* Show Rating bar with active learning */}
                 <Rating visible={this.state.learnActive} />
 
             </View>
