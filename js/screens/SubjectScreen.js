@@ -6,7 +6,7 @@ import NewSubject from '../components/NewSubject'
 // import database
 import Firebase from '../Firebase';
 
-export default class SubjectListScreen extends Component {
+export default class SubjectScreen extends Component {
 
     // set class states
     state = { userData: {}, showCreateSubjectScreen: false, subjects: [], isLoading: true };

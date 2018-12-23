@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, ActivityIndicator, Button, View, FlatList, StyleSheet, Text } from 'react-native';
+import { Alert, ActivityIndicator, Button, View, FlatList, StyleSheet, Text, TouchableOpacity } from 'react-native';
 // import database
 import Firebase from '../Firebase';
 // import Card
@@ -8,7 +8,7 @@ import Card from '../components/Card';
 import NewCard from '../components/NewCard';
 
 
-export default class CardListScreen extends Component {
+export default class CardScreen extends Component {
 
     state = { cardList: {}, cards: [], isLoading: true, showCreateCardScreen: false };
 
@@ -118,6 +118,12 @@ export default class CardListScreen extends Component {
 
         return (
             <View style={styles.container} >
+                <TouchableOpacity style={styles.button} onPress={() => this.props.navigation.navigate('CardDetailScreen', {
+                    card: this.state.cards[0], editMode: 'Learn'
+                }
+                )}>
+                    <Text style={styles.buttonText}>Start learning</Text>
+                </TouchableOpacity>
                 <FlatList
                     data={this.state.cards}
                     keyExtractor={item => item.id}
@@ -127,7 +133,7 @@ export default class CardListScreen extends Component {
                     onRefresh={this._refresh}
                     renderItem={({ item }) => (
                         // render CardListItems
-                        <Card card={item} onPress={() => this.props.navigation.navigate('CardLearningScreen', {
+                        <Card card={item} onPress={() => this.props.navigation.navigate('CardDetailScreen', {
                             card: item
                         })} />
                     )}
@@ -154,6 +160,20 @@ const styles = StyleSheet.create({
         paddingTop: 100,
         fontSize: 30,
         textAlign: 'center'
-    }
+    },
+    button: {
+        marginTop: 10,
+        justifyContent: 'flex-start',
+        backgroundColor: "lightsalmon",
+        alignItems: 'center',
+        paddingVertical: 15,
+        borderRadius: 40,
+        marginBottom: 10
+    },
+    buttonText: {
+        textAlign: 'center',
+        color: 'white',
+        fontWeight: 'bold'
+    },
 });
 

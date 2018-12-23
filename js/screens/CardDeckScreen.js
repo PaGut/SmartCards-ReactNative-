@@ -6,7 +6,7 @@ import NewCardList from '../components/NewCardList'
 // import database
 import Firebase from '../Firebase';
 
-export default class SubjectDetailScreen extends Component {
+export default class CardDeckScreen extends Component {
 
     state = { subject: {}, cardLists: [], isLoading: true, showCreateCardListScreen: false };
     debugger;

@@ -67,25 +67,26 @@ export default class CardListItem extends Component {
     };
 
     _formatDate = (date) => {
-        debugger;
-        let helperDate = new Date(date);
-        // helperDate = date;
+        helperDate = new Date(date);
 
+        //prepare day for display-format
         let day = helperDate.getDate();
-
         //add leading 0 if needed
         if (String(day).length == 1) {
             day = '0' + day;
         }
 
+        //prepare month for display-format
         let month = helperDate.getMonth() + 1;//month-count starts with 0
         //add leading 0 if needed
         if (String(month).length == 1) {
             month = '0' + month;
         }
 
+        //determine year
         let year = helperDate.getFullYear();
 
+        // Format to DD.MM.YYYY
         let formatedDate = day + '.' + month + '.' + year;
 
         return (

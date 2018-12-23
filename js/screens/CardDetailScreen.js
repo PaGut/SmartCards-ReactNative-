@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import { TouchableOpacity, Button, View, StyleSheet, Text } from 'react-native';
 import CardFlip from 'react-native-card-flip';
+import Rating from '../components/Rating';
 // import database
 import Firebase from '../Firebase';
 
-export default class CardScreen extends Component {
+export default class CardDetailScreen extends Component {
 
-    state = { cards: [], activeCard: null, question: null, answer: null, currentCount: null, maxCount: null, editMode: false };
+    state = { cards: [], activeCard: null, question: null, answer: null, currentCount: null, maxCount: null, editMode: false, learnActive: false };
 
     // define card header at runtime
     static navigationOptions = ({ navigation }) => {
-        debugger;
+
         var title = navigation.getParam('title');
         if (title === undefined) {
             title = "";
@@ -21,16 +22,21 @@ export default class CardScreen extends Component {
             buttonTitle = "View";
         }
 
-        return {
-            title: title,
-            headerRight: (
-                <Button
-                    onPress={navigation.getParam('setEditMode')}
-                    title={buttonTitle}
-                    color="lightsalmon"
-                />
-            )
-        };
+
+        if (navigation.getParam('editMode') !== 'Learn') {
+
+            return {
+
+                title: title,
+                headerRight: (
+                    <Button
+                        onPress={navigation.getParam('setEditMode')}
+                        title={buttonTitle}
+                        color="lightsalmon"
+                    />
+                )
+            };
+        }
     };
 
     // set view mode edit/display
@@ -134,11 +140,20 @@ export default class CardScreen extends Component {
     componentDidMount() {
         // init firebase object        
         Firebase.init();
+        debugger;
         // set function to static navigation option parameter
         this.props.navigation.setParams({ setViewMode: this._setEditMode });
+
+        // set learn mode
+        if (
+            this.props.navigation.getParam('editMode') === 'Learn'
+        ) {
+            this.setState({ learnActive: true })
+        }
         // get the cards of the current deck
         this._retrieveCards();
-    }
+
+    };
 
     render() {
 
@@ -159,7 +174,10 @@ export default class CardScreen extends Component {
                         <Text style={styles.buttonText}>Next</Text>
                     </TouchableOpacity>
                 </View>
+                <Rating visible={this.state.learnActive} />
+
             </View>
+
         );
     }
 }
