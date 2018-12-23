@@ -82,7 +82,7 @@ export default class SubjectDetailScreen extends Component {
 
         // get active subject        
         let subject = this.props.navigation.getParam('subject');
-        debugger;
+
         let cardLists = [];
         // read data asynchron from firebase db                
         let query = await Firebase.db.collection('user').doc(subject.userData.email).collection('subjects').doc(subject.name).collection('cardLists').get();
@@ -154,7 +154,7 @@ export default class SubjectDetailScreen extends Component {
                         onRefresh={this._refresh}
                         renderItem={({ item, index }) => (
                             // render CardListItems
-                            <CardListItem cardList={item} index={index} onDelete={this._deleteCardListItem} onPress={() => this.props.navigation.navigate('CardListScreen', {
+                            <CardListItem cardList={item} index={index} onDelete={this._deleteCardListItem} onPress={() => this.props.navigation.navigate('CardScreen', {
                                 cardList: item
                             })}></CardListItem>
                         )}

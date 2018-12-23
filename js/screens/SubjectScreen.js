@@ -140,7 +140,7 @@ export default class SubjectListScreen extends Component {
                     onRefresh={this._refresh}
                     renderItem={({ item, index }) => (
                         // render SubjectListItems
-                        <SubjectListItem subject={item} index={index} onDelete={this._deleteSubjectItem} onPress={() => this.props.navigation.navigate('SubjectDetailScreen', {
+                        <SubjectListItem subject={item} index={index} onDelete={this._deleteSubjectItem} onPress={() => this.props.navigation.navigate('CardDeckScreen', {
                             subject: item
                         })}></SubjectListItem>
                     )}

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Swipeout from 'react-native-swipeout';
 
+
 export default class CardListItem extends Component {
 
     constructor(props) {
@@ -66,13 +67,29 @@ export default class CardListItem extends Component {
     };
 
     _formatDate = (date) => {
-
-        // let day = date.getDay();
-        // let month = date.getMonth();
-        // let year = date.getFullYear();
         debugger;
+        let helperDate = new Date(date);
+        // helperDate = date;
+
+        let day = helperDate.getDate();
+
+        //add leading 0 if needed
+        if (String(day).length == 1) {
+            day = '0' + day;
+        }
+
+        let month = helperDate.getMonth() + 1;//month-count starts with 0
+        //add leading 0 if needed
+        if (String(month).length == 1) {
+            month = '0' + month;
+        }
+
+        let year = helperDate.getFullYear();
+
+        let formatedDate = day + '.' + month + '.' + year;
+
         return (
-            date
+            formatedDate
         );
 
     };

@@ -81,7 +81,7 @@ export default class SignIn extends Component {
 
             this.props.navigation.navigate("App", {}, {
                 type: "Navigate",
-                routeName: "SubjectListScreen",
+                routeName: "SubjectScreen",
                 userData: user
             });
         } catch (error) {

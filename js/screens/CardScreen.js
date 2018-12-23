@@ -1,164 +1,139 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, Button, View, StyleSheet, Text } from 'react-native';
-import CardFlip from 'react-native-card-flip';
+import { Alert, ActivityIndicator, Button, View, FlatList, StyleSheet, Text } from 'react-native';
 // import database
 import Firebase from '../Firebase';
+// import Card
+import Card from '../components/Card';
+// import NewCard
+import NewCard from '../components/NewCard';
 
-export default class CardScreen extends Component {
 
-    state = { cards: [], activeCard: null, question: null, answer: null, currentCount: null, maxCount: null, editMode: false };
+export default class CardListScreen extends Component {
 
-    // define card header at runtime
+    state = { cardList: {}, cards: [], isLoading: true, showCreateCardScreen: false };
+
+    // set cardList title at runtime
     static navigationOptions = ({ navigation }) => {
-        debugger;
-        var title = navigation.getParam('title');
-        if (title === undefined) {
-            title = "";
-        }
-
-        var buttonTitle = navigation.getParam('modeButtonTitle');
-        if (buttonTitle === undefined) {
-            buttonTitle = "View";
-        }
+        const cardList = navigation.getParam('cardList');
 
         return {
-            title: title,
+            title: cardList.name,
             headerRight: (
                 <Button
-                    onPress={navigation.getParam('setEditMode')}
-                    title={buttonTitle}
+                    onPress={navigation.getParam('setCreateCard')}
+                    title="Create"
                     color="lightsalmon"
                 />
             )
         };
     };
 
-    // set view mode edit/display
-    _setEditMode = () => {
-        debugger;
-        let mode;
-        if (this.state.editMode === true) {
-            mode = false;
-        } else {
-            mode = true;
-        }
-        this.setState({ editMode: mode });
+    // Called after the view is loaded
+    componentDidMount() {
+        // init firebase
+        Firebase.init();
+        // set function to static navigation option parameter
+        this.props.navigation.setParams({ setCreateCard: this._setCreateCard });
+        // get the cards of the current deck
+        this._retrieveCards();
     }
 
-    // set next card
-    _nextCard = () => {
-
-        var { cards, currentCount, maxCount } = this.state;
-        debugger;
-        // check if last entry is reached
-        if (currentCount === cards.length) {
-            currentCount = 0;
-        }
-        // get data for next card
-        let activeCard = cards[currentCount];
-        currentCount = currentCount + 1;
-        // set new state
-        this.setState({ activeCard: activeCard, currentCount: currentCount, question: activeCard.question, answer: activeCard.answer });
-        // set toolbar title counter
-        let sTitle = `${currentCount}/${maxCount}`;
-        this.props.navigation.setParams({ title: sTitle });
-    }
-
-    // set previous card
-    _previousCard = () => {
-
-        let { cards, currentCount, maxCount } = this.state;
-        // check if first card is reached
-        if (currentCount === 1) {
-            currentCount = cards.length + 1;
-        }
-        // get data for previous card
-        let activeCard = cards[currentCount - 2];
-        currentCount = currentCount - 1;
-        this.setState({ activeCard: activeCard, currentCount: currentCount, question: activeCard.question, answer: activeCard.answer });
-        // set toolbar title counter
-        let sTitle = `${currentCount}/${maxCount}`;
-        this.props.navigation.setParams({ title: sTitle });
-    }
-
-    _getIndexOfCurrentCard = (cards, activeCard) => {
-        for (var i = 0; i <= cards.length; i++) {
-            if (cards[i].id === activeCard.id) {
-                // set new count                
-                return i + 1;
-            }
-        }
-    }
-
-    // Get all cards from database
+    // Get cards from database
     _retrieveCards = async () => {
-
-        let { editMode } = this.state;
-        // get active selected card
-        let activeCard = this.props.navigation.getParam('card');
-        let email = activeCard.cardData.subjectData.userData.email;
-        let subjectName = activeCard.cardData.subjectData.name;
-
-        // read data asynchron from firebase db for specific cardList   
-        let query = await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('cardLists').doc(activeCard.cardData.id).collection('cards').get();
+        let cardList = this.props.navigation.getParam('cardList');
 
         let cards = [];
+        let email = cardList.subjectData.userData.email;
+        let subjectName = cardList.subjectData.name;
+
+        // read data asynchron from firebase db for specific cardList
+        let query = await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('cardLists').doc(cardList.id).collection('cards').get();
+
         // add every read entry to array of cards
         query.forEach(card => {
             cards.push({
                 id: card.id,
                 question: card.data().question,
                 answer: card.data().answer,
+                cardData: cardList
             });
         });
-
-        // set count for current card
-        let currentCount = this._getIndexOfCurrentCard(cards, activeCard);
-        let maxCount = cards.length;
-        // set cards array to state and active card
-        this.setState({ cards: cards, activeCard: activeCard, question: activeCard.question, answer: activeCard.answer, currentCount: currentCount, maxCount: maxCount });
-
-        // set toolbar header title and button title       
-        let sModeButtonTitle;
-        if (editMode === false) {
-            sModeButtonTitle = "Edit";
-        } else {
-            sModeButtonTitle = "View";
-        }
-        let sTitle = `${currentCount}/${maxCount}`;
-        // set title of mode button
-        this.props.navigation.setParams({ modeButtonTitle: sModeButtonTitle, title: sTitle });
+        // neuen state setzen und loading indicator false setzen
+        this.setState({ cardList, cards, isLoading: false });
     }
 
-    /* called after view is called */
-    componentDidMount() {
-        // init firebase object        
-        Firebase.init();
-        // set function to static navigation option parameter
-        this.props.navigation.setParams({ setViewMode: this._setEditMode });
-        // get the cards of the current deck
-        this._retrieveCards();
+    _setCreateCard = () => {
+        this.setState({ showCreateCardScreen: true });
+    }
+
+    _addCard = (question, answer) => {
+        let { cards } = this.state;
+
+        // check if card question is empty
+        if (question) {
+            // set card list data
+            cards.push({ question: question, answer: answer });
+            // save quote within sql lite database
+
+            this._saveCardToDB(question, answer, cards);
+        } else {
+            Alert.alert('Card question is empty',
+                'Please enter a Card question',
+                [{ text: 'OK', style: 'cancel' }]);
+        }
+        this.setState({ cards, showCreateCardScreen: false });
+
+    }
+    _closeCreateCardScreen = () => {
+        this.setState({ showCreateCardScreen: false });
+    }
+
+    _saveCardToDB = async (question, answer, cards) => {
+        let { cardList } = this.state;
+        let email = cardList.subjectData.userData.email;
+        let subjectName = cardList.subjectData.name;
+
+        try {
+            //save data to database collection card
+            docRef = await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('cardLists').doc(cardList.id).collection('cards').add({ question, answer });
+            // set new generated id to array entry
+            cards[cards.length - 1].id = docRef.id;
+        } catch (error) {
+            alert('No internet connection');
+        }
+        this.setState({ cards });
+
     }
 
     render() {
 
-        let { question, answer, currentCount, maxCount } = this.state;
+        if (this.state.isLoading) {
+            return (
+                <View style={styles.container}>
+                    <ActivityIndicator />
+                </View>);
+        }
+
+        let cardList = this.props.navigation.getParam('cardList');
 
         return (
-            <View style={styles.container}>
-                <Text style={styles.counter}>{currentCount}/{maxCount}</Text>
-                <CardFlip style={styles.cardContainer} ref={(card) => this.card = card} >
-                    <TouchableOpacity activeOpacity={1} style={[styles.card, styles.card1]} onPress={() => this.card.flip()} ><Text style={styles.label}>{question}</Text></TouchableOpacity>
-                    <TouchableOpacity activeOpacity={1} style={[styles.card, styles.card2]} onPress={() => this.card.flip()} ><Text style={styles.label}>{answer}</Text></TouchableOpacity>
-                </CardFlip>
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button} onPress={() => this._previousCard()}>
-                        <Text style={styles.buttonText}>Previous</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => this._nextCard()}>
-                        <Text style={styles.buttonText}>Next</Text>
-                    </TouchableOpacity>
-                </View>
+            <View style={styles.container} >
+                <FlatList
+                    data={this.state.cards}
+                    keyExtractor={item => item.id}
+                    ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
+                    ListEmptyComponent={() => (<Text style={styles.listEmpty}>No Data</Text>)}
+                    refreshing={this.state.isLoading}
+                    onRefresh={this._refresh}
+                    renderItem={({ item }) => (
+                        // render CardListItems
+                        <Card card={item} onPress={() => this.props.navigation.navigate('CardLearningScreen', {
+                            card: item
+                        })} />
+                    )}
+                >
+                </FlatList>
+                <NewCard visible={this.state.showCreateCardScreen} onSave={this._addCard} onCancel={this._closeCreateCardScreen} />
             </View>
         );
     }
@@ -168,61 +143,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
         backgroundColor: 'white',
     },
-    counter: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: 'black',
-        marginBottom: 10,
-    },
-    cardContainer: {
-        width: 320,
-        height: 400,
-    },
-    card: {
-        width: 320,
-        height: 400,
-        backgroundColor: '#FE474C',
-        borderRadius: 5,
-        shadowColor: 'rgba(0,0,0,0.5)',
-        shadowOffset: {
-            width: 0,
-            height: 1,
-        },
-        shadowOpacity: 0.5,
-    },
-    card1: {
+    listSeparator: {
+        height: StyleSheet.hairlineWidth,
         backgroundColor: 'lightsalmon',
+        marginVertical: 5
     },
-    card2: {
-        backgroundColor: 'lightgrey',
-    },
-    label: {
-        lineHeight: 470,
-        textAlign: 'center',
-        fontSize: 35,
-        fontFamily: 'System',
-        color: 'white',
-        backgroundColor: 'transparent',
-    },
-    buttonContainer: {
-        flexDirection: 'row'
-    },
-    button: {
-        width: 150,
-        marginTop: 30,
-        marginHorizontal: 20,
-        backgroundColor: "lightsalmon",
-        alignItems: 'center',
-        paddingVertical: 20,
-        borderRadius: 40,
-    },
-    buttonText: {
-        textAlign: 'center',
-        color: 'white',
-        fontWeight: 'bold'
-    },
+    listEmpty: {
+        paddingTop: 100,
+        fontSize: 30,
+        textAlign: 'center'
+    }
 });
 

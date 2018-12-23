@@ -37,7 +37,7 @@ export default class SignIn extends Component {
                 // check if password is correct
                 if (password === userData.password) {
                     // navigate to app homescreen
-                    this.props.navigation.navigate("SubjectListScreen", {
+                    this.props.navigation.navigate("SubjectScreen", {
                         userData: userData
                     });
                 }
