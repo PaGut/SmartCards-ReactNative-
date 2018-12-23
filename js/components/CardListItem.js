@@ -51,7 +51,7 @@ export default class CardListItem extends Component {
             <Swipeout {...swipeSettings}>
                 <TouchableOpacity onPress={onPress}>
                     <View style={styles.container}>
-                        <Image style={styles.image} source={require("../../assets/folder-flat.png")} />
+                        <Image style={styles.image} source={require("../../assets/CardSet.jpg")} />
                         <View style={styles.infoColumn}>
                             <View style={styles.infoRow}>
                                 <Text style={styles.text}>{cardList.name}</Text>
