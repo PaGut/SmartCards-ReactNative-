@@ -14,10 +14,10 @@ export default class CardButtons extends Component {
             //Learn mode is not active, show the buttons ->return buttons
             return (
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button} onPress={() => this._previousCard()}>
+                    <TouchableOpacity style={styles.button} onPress={() => this.props.previous()}>
                         <Text style={styles.buttonText}>Previous</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => this._nextCard()}>
+                    <TouchableOpacity style={styles.button} onPress={() => this.props.next()}>
                         <Text style={styles.buttonText}>Next</Text>
                     </TouchableOpacity>
                 </View>

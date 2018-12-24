@@ -1,19 +1,22 @@
 import React, { Component } from 'react';
 import { TouchableOpacity, Button, View, StyleSheet, Text } from 'react-native';
 import CardFlip from 'react-native-card-flip';
-
 // Navigation-Buttons for Edit/View Mode
 import CardButtons from '../components/CardButtons';
-
 // Rating-Bar for Learn Mode
-import Rating from '../components/Rating';
-
+import RatingBar from '../components/RatingBar';
 // import database
 import Firebase from '../Firebase';
 
 export default class CardDetailScreen extends Component {
 
-    state = { cards: [], activeCard: null, question: null, answer: null, currentCount: null, maxCount: null, editMode: false, learnActive: false };
+    state = {
+        cards: [], activeCard: null,
+        question: null, answer: null,
+        currentCount: null, maxCount: null,
+        editMode: false, learnActive: false,
+        ratingCount: null
+    };
 
     // define card header at runtime
     static navigationOptions = ({ navigation }) => {
@@ -60,11 +63,25 @@ export default class CardDetailScreen extends Component {
     // set next card
     _nextCard = () => {
 
-        var { cards, currentCount, maxCount } = this.state;
-        debugger;
+        var { cards, currentCount, maxCount, learnActive, ratingCount } = this.state;
+        let score = 0;
         // check if last entry is reached
         if (currentCount === cards.length) {
-            currentCount = 0;
+            // Learn Mode active
+            if (learnActive) {
+                // show result screen
+                score = ratingCount / cards.length;
+                debugger;
+                this.props.navigation.navigate('LearnResultScreen', { score: score });
+                //stop processing here because the learning-process is finished now
+                return;
+            }
+            //Edit/View Mode active
+            else {
+                // start from the beginning again
+                currentCount = 0;
+            }
+
         }
         // get data for next card
         let activeCard = cards[currentCount];
@@ -146,7 +163,7 @@ export default class CardDetailScreen extends Component {
     componentDidMount() {
         // init firebase object        
         Firebase.init();
-        debugger;
+
         // set function to static navigation option parameter
         this.props.navigation.setParams({ setViewMode: this._setEditMode });
 
@@ -160,7 +177,7 @@ export default class CardDetailScreen extends Component {
 
     render() {
 
-        let { question, answer, currentCount, maxCount } = this.state;
+        let { question, answer, currentCount, maxCount, learnActive } = this.state;
 
         return (
             <View style={styles.container}>
@@ -170,14 +187,18 @@ export default class CardDetailScreen extends Component {
                     <TouchableOpacity activeOpacity={1} style={[styles.card, styles.card2]} onPress={() => this.card.flip()} ><Text style={styles.label}>{answer}</Text></TouchableOpacity>
                 </CardFlip>
                 {/* Do not show CardButtons if Learning is active */}
-                <CardButtons hide={this.state.learnActive} />
+                <CardButtons hide={learnActive} previous={this._previousCard} next={this._nextCard} />
 
                 {/* Show Rating bar with active learning */}
-                <Rating visible={this.state.learnActive} />
+                <RatingBar visible={learnActive} onFinishRating={this._onFinishRating} defaultRating={0} />
 
             </View>
 
         );
+    }
+    _onFinishRating = (rating) => {
+        this.setState({ ratingCount: this.state.ratingCount + rating });
+        this._nextCard();
     }
 }
 
