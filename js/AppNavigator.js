@@ -20,7 +20,7 @@ const headerStyle = {
 };
 
 // Name der Routen
-const HomeStack = createStackNavigator({ SubjectScreen, CardDeckScreen, CardScreen, CardDetailScreen, LearnResultScreen }, {
+const HomeStack = createStackNavigator({ SubjectScreen, CardDeckScreen, CardScreen, CardDetailScreen, LearnResultScreen, SignIn }, {
     defaultNavigationOptions: {
         headerStyle: {
             backgroundColor: 'aliceblue',
@@ -28,6 +28,21 @@ const HomeStack = createStackNavigator({ SubjectScreen, CardDeckScreen, CardScre
         }
     }
 });
+
+HomeStack.navigationOptions = ({ navigation }) => {
+
+    let tabBarVisible = true;
+    // check if navigation to sign in screen is true, for this screen hide footer bar
+    if (navigation.state.routes[1] !== undefined) {
+        if (navigation.state.routes[1].routeName === "SignIn") {
+            tabBarVisible = false;
+        }
+    }
+
+    return {
+        tabBarVisible,
+    };
+};
 
 // navigation stack for sign in/authorization
 export const AuthStack = createStackNavigator({

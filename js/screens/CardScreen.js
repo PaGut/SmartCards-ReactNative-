@@ -6,7 +6,8 @@ import Firebase from '../Firebase';
 import Card from '../components/Card';
 // import NewCard
 import NewCard from '../components/NewCard';
-
+// import icons
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default class CardScreen extends Component {
 
@@ -19,11 +20,8 @@ export default class CardScreen extends Component {
         return {
             title: cardList.name,
             headerRight: (
-                <Button
-                    onPress={navigation.getParam('setCreateCard')}
-                    title="Create"
-                    color="lightsalmon"
-                />
+                <Icon.Button name="add" color="lightsalmon" size="30" iconStyle={{ marginRight: 0 }} backgroundColor="transparent" onPress={navigation.getParam('setCreateCard')}>
+                </Icon.Button>
             )
         };
     };
@@ -36,6 +34,11 @@ export default class CardScreen extends Component {
         this.props.navigation.setParams({ setCreateCard: this._setCreateCard });
         // get the cards of the current deck
         this._retrieveCards();
+        // add focus event, called every time the site is focused for navigation
+        this.props.navigation.addListener('willFocus', () => {
+            debugger;
+            this._refresh();
+        });
     }
 
     // Get cards from database
@@ -102,7 +105,31 @@ export default class CardScreen extends Component {
             alert('No internet connection');
         }
         this.setState({ cards });
+    }
 
+    /* delete selected subject from firebase DB */
+    _deleteCard = async (deleteRow) => {
+
+        let { cardList, userData } = this.state;
+        let email = cardList.subjectData.userData.email;
+        let subjectName = cardList.subjectData.name;
+
+        try {
+            // add subject to specific user collection
+            docRef = await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('cardLists').doc(cardList.id).collection('cards').doc(deleteRow).delete();
+            // set new generated id to array entry
+            this.setState({ isLoading: true });
+            this._retrieveCards();
+
+            //subjects[subjects.length - 1].id = docRef.id;
+        } catch (error) {
+            alert('Card does not exist');
+        }
+    }
+
+    _refresh = () => {
+        this.setState({ isLoading: true });
+        this._retrieveCards();
     }
 
     render() {
@@ -133,7 +160,7 @@ export default class CardScreen extends Component {
                     onRefresh={this._refresh}
                     renderItem={({ item }) => (
                         // render CardListItems
-                        <Card card={item} onPress={() => this.props.navigation.navigate('CardDetailScreen', {
+                        <Card card={item} onDelete={this._deleteCard} onPress={() => this.props.navigation.navigate('CardDetailScreen', {
                             card: item, learnActive: false
                         })} />
                     )}

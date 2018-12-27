@@ -5,6 +5,8 @@ import CardListItem from '../components/CardListItem'
 import NewCardList from '../components/NewCardList'
 // import database
 import Firebase from '../Firebase';
+// import icons
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default class CardDeckScreen extends Component {
 
@@ -16,11 +18,8 @@ export default class CardDeckScreen extends Component {
         return {
             title: subject.name,
             headerRight: (
-                <Button
-                    onPress={navigation.getParam('setCreateCardListScreen')}
-                    title="Create"
-                    color="lightsalmon"
-                />
+                <Icon.Button name="add" color="lightsalmon" size="30" iconStyle={{ marginRight: 0 }} backgroundColor="transparent" onPress={navigation.getParam('setCreateCardListScreen')}>
+                </Icon.Button>
             )
         };
     };
@@ -120,7 +119,6 @@ export default class CardDeckScreen extends Component {
         }
     }
 
-
     /* called after view is called */
     componentDidMount() {
         // set function to static navigation option parameter
@@ -149,7 +147,7 @@ export default class CardDeckScreen extends Component {
                         data={this.state.cardLists}
                         keyExtractor={item => item.id}
                         ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
-                        ListEmptyComponent={() => (<Text style={styles.listEmpty}>No Data</Text>)}
+                        ListEmptyComponent={() => (<Text style={styles.listEmpty}>No Card Deck exists</Text>)}
                         refreshing={this.state.isLoading}
                         onRefresh={this._refresh}
                         renderItem={({ item, index }) => (

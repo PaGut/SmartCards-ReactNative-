@@ -48,6 +48,11 @@ export default class Card extends Component {
             sectionId: 1
         };
 
+        // cut shown text after position 20 and add "..."
+        let shownText = card.question;
+        if (card.question.length > 20) {
+            shownText = card.question.slice(0, 25) + "...";
+        }
         return (
             <Swipeout {...swipeSettings}>
                 <TouchableOpacity onPress={onPress}>
@@ -55,7 +60,7 @@ export default class Card extends Component {
                         <Image style={styles.image} source={require("../../assets/Card.png")} />
                         <View style={styles.infoColumn}>
                             <View style={styles.infoRow}>
-                                <Text style={styles.text}>{card.question}</Text>
+                                <Text style={styles.text}>{shownText}</Text>
                             </View>
                         </View>
                     </View>

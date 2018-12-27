@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, Button, View, StyleSheet, Text } from 'react-native';
+import { KeyboardAvoidingView, TextInput, TouchableOpacity, Button, View, StyleSheet, Text } from 'react-native';
 import CardFlip from 'react-native-card-flip';
 // Navigation-Buttons for Edit/View Mode
 import CardButtons from '../components/CardButtons';
@@ -11,7 +11,7 @@ import Firebase from '../Firebase';
 export default class CardDetailScreen extends Component {
 
     state = {
-        cards: [], activeCard: null,
+        cards: [], cardDeck: null, activeCard: null,
         question: null, answer: null,
         currentCount: null, maxCount: null,
         editMode: false, learnActive: false,
@@ -50,7 +50,6 @@ export default class CardDetailScreen extends Component {
 
     // set view mode edit/display
     _setEditMode = () => {
-        debugger;
         let mode;
         if (this.state.editMode === true) {
             mode = false;
@@ -65,13 +64,16 @@ export default class CardDetailScreen extends Component {
 
         var { cards, currentCount, maxCount, learnActive, ratingCount } = this.state;
         let score = 0;
+
+        // set changed content if edit mode is active
+        this._saveChangesInEditMode();
+
         // check if last entry is reached
         if (currentCount === cards.length) {
             // Learn Mode active
             if (learnActive) {
                 // show result screen
                 score = ratingCount / cards.length;
-                debugger;
                 this.props.navigation.navigate('LearnResultScreen', { score: score });
                 //stop processing here because the learning-process is finished now
                 return;
@@ -81,7 +83,6 @@ export default class CardDetailScreen extends Component {
                 // start from the beginning again
                 currentCount = 0;
             }
-
         }
         // get data for next card
         let activeCard = cards[currentCount];
@@ -95,6 +96,9 @@ export default class CardDetailScreen extends Component {
 
     // set previous card
     _previousCard = () => {
+
+        // set changed content if edit mode is active
+        this._saveChangesInEditMode();
 
         let { cards, currentCount, maxCount } = this.state;
         // check if first card is reached
@@ -145,7 +149,7 @@ export default class CardDetailScreen extends Component {
         let currentCount = this._getIndexOfCurrentCard(cards, activeCard);
         let maxCount = cards.length;
         // set cards array to state and active card
-        this.setState({ cards: cards, activeCard: activeCard, question: activeCard.question, answer: activeCard.answer, currentCount: currentCount, maxCount: maxCount });
+        this.setState({ cardDeck: activeCard.cardData, cards: cards, activeCard: activeCard, question: activeCard.question, answer: activeCard.answer, currentCount: currentCount, maxCount: maxCount });
 
         // set toolbar header title and button title       
         let sModeButtonTitle;
@@ -159,46 +163,87 @@ export default class CardDetailScreen extends Component {
         this.props.navigation.setParams({ modeButtonTitle: sModeButtonTitle, title: sTitle });
     }
 
+    _onFinishRating = (rating) => {
+        this.setState({ ratingCount: this.state.ratingCount + rating });
+        this._nextCard();
+    }
+
+    _saveChangesInEditMode = async () => {
+
+        let { cards, cardDeck, question, answer, activeCard, currentCount, editMode } = this.state;
+
+        // check if edit mode is active
+        if (editMode) {
+            let email = cardDeck.subjectData.userData.email;
+            let subjectName = cardDeck.subjectData.name;
+
+            // set changed question and answer
+            cards[currentCount - 1].question = question;
+            cards[currentCount - 1].answer = answer;
+            // set updated cards array
+            this.setState({ cards });
+
+            // update edited answer and question within database
+            try {
+                await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('cardLists').doc(cardDeck.id).collection('cards').doc(activeCard.id).update({ answer: answer, question: question });
+            } catch (error) {
+
+            }
+        }
+    }
+
     /* called after view is called */
     componentDidMount() {
         // init firebase object        
         Firebase.init();
 
         // set function to static navigation option parameter
-        this.props.navigation.setParams({ setViewMode: this._setEditMode });
+        this.props.navigation.setParams({ setEditMode: this._setEditMode });
 
         // set learn mode
         this.setState({ learnActive: this.props.navigation.getParam('learnActive') });
 
         // get the cards of the current deck
         this._retrieveCards();
-
     };
 
     render() {
 
-        let { question, answer, currentCount, maxCount, learnActive } = this.state;
+        let { question, answer, currentCount, maxCount, learnActive, editMode } = this.state;
 
-        return (
-            <View style={styles.container}>
-                <Text style={styles.counter}>{currentCount}/{maxCount}</Text>
-                <CardFlip style={styles.cardContainer} ref={(card) => this.card = card} >
+        let content;
+
+        if (editMode === false) {
+            content =
+                <CardFlip visible={false} style={styles.cardContainer} ref={(card) => this.card = card} >
                     <TouchableOpacity activeOpacity={1} style={[styles.card, styles.card1]} onPress={() => this.card.flip()} ><Text style={styles.label}>{question}</Text></TouchableOpacity>
                     <TouchableOpacity activeOpacity={1} style={[styles.card, styles.card2]} onPress={() => this.card.flip()} ><Text style={styles.label}>{answer}</Text></TouchableOpacity>
                 </CardFlip>
+        } else {
+            content =
+                <View>
+                    <TextInput value={question} style={styles.input} placeholder="Enter question" multiline={true} blurOnSubmit={true}
+                        underlineColorAndroid="transparent" onChangeText={(value) => this.setState({ question: value })}>
+                    </TextInput>
+                    <TextInput value={answer} style={styles.input} placeholder="Enter answer" multiline={true} blurOnSubmit={true}
+                        underlineColorAndroid="transparent" onChangeText={(value) => this.setState({ answer: value })}>
+                    </TextInput>
+                </View>
+        }
+
+        return (
+            <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
+                <Text style={styles.counter}>{currentCount}/{maxCount}</Text>
+                {/* set content depending on edit mode */}
+                {content}
+
                 {/* Do not show CardButtons if Learning is active */}
                 <CardButtons hide={learnActive} previous={this._previousCard} next={this._nextCard} />
 
                 {/* Show Rating bar with active learning */}
                 <RatingBar visible={learnActive} onFinishRating={this._onFinishRating} defaultRating={0} />
-
-            </View>
-
+            </KeyboardAvoidingView>
         );
-    }
-    _onFinishRating = (rating) => {
-        this.setState({ ratingCount: this.state.ratingCount + rating });
-        this._nextCard();
     }
 }
 
@@ -216,10 +261,12 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     cardContainer: {
+        flexDirection: 'row',
         width: 320,
         height: 400,
     },
     card: {
+        flex: 1,
         width: 320,
         height: 400,
         backgroundColor: '#FE474C',
@@ -230,6 +277,8 @@ const styles = StyleSheet.create({
             height: 1,
         },
         shadowOpacity: 0.5,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     card1: {
         backgroundColor: 'lightsalmon',
@@ -238,9 +287,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'lightgrey',
     },
     label: {
-        lineHeight: 470,
         textAlign: 'center',
-        fontSize: 35,
+        fontSize: 26,
         fontFamily: 'System',
         color: 'white',
         backgroundColor: 'transparent',
@@ -262,5 +310,17 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold'
     },
+    input: {
+        borderWidth: 1,
+        borderColor: 'lightsalmon',
+        borderRadius: 4,
+        fontSize: 20,
+        padding: 10,
+        marginBottom: 20,
+        minHeight: 100,
+        maxHeight: 150,
+        minWidth: "80%",
+        maxWidth: "80%"
+    }
 });
 

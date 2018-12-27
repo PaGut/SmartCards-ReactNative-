@@ -47,13 +47,12 @@ export default class NewCard extends Component {
             } animationType="slide" >
                 <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
                     <Text style={styles.text}>Create New Card</Text>
-                    <TextInput style={[styles.input, { height: 80 }]} placeholder="Enter question" multiline={false}
+                    <TextInput style={styles.input} placeholder="Enter question" multiline={false}
                         underlineColorAndroid="transparent" onChangeText={(value) => this._inputChanged(value)}>
                     </TextInput>
-                    <TextInput style={[styles.input, { height: 80 }]} placeholder="Enter answer" multiline={false}
+                    <TextInput style={styles.input} placeholder="Enter answer" multiline={false}
                         underlineColorAndroid="transparent" onChangeText={(value) => this.setState({ answer: value })}>
                     </TextInput>
-
                     <View>
                         <TouchableOpacity disabled={saveDisabled} style={[styles.button, saveBtnStyle.color]} onPress={() => this.onSavePressed(question, answer)}>
                             <Text style={styles.buttonText}>Save</Text>
@@ -68,7 +67,6 @@ export default class NewCard extends Component {
                     </View>
                 </KeyboardAvoidingView>
             </Modal>
-
         );
     }
 
@@ -106,7 +104,8 @@ const styles = StyleSheet.create({
         fontSize: 20,
         padding: 10,
         height: 50,
-        marginBottom: 20
+        marginBottom: 20,
+        height: 80
     },
     button: {
         width: 300,

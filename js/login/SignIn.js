@@ -10,6 +10,15 @@ import Firebase from '../Firebase';
 
 export default class SignIn extends Component {
 
+    // set header toolbar title
+    static navigationOptions = ({ navigation }) => {
+        return {
+            title: "SignIn",
+            headerLeft: null,
+            tabBarVisible: false
+        }
+    }
+
     state = { username: "Patrick", password: "diablo" };
 
     _handleLogin = async () => {

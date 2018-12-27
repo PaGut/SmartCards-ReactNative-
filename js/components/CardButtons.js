@@ -1,7 +1,8 @@
 
 import React, { Component } from 'react';
 import { TouchableOpacity, View, StyleSheet, Text } from 'react-native';
-
+// import icons
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default class CardButtons extends Component {
 
@@ -15,10 +16,10 @@ export default class CardButtons extends Component {
             return (
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={styles.button} onPress={() => this.props.previous()}>
-                        <Text style={styles.buttonText}>Previous</Text>
+                        <Icon name="arrow-back" color="white" size={50} />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.button} onPress={() => this.props.next()}>
-                        <Text style={styles.buttonText}>Next</Text>
+                        <Icon name="arrow-forward" color="white" size={50} />
                     </TouchableOpacity>
                 </View>
             )
@@ -39,10 +40,5 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 20,
         borderRadius: 40,
-    },
-    buttonText: {
-        textAlign: 'center',
-        color: 'white',
-        fontWeight: 'bold'
     },
 });

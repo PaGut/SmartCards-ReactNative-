@@ -54,9 +54,7 @@ export default class CardListItem extends Component {
                     <View style={styles.container}>
                         <Image style={styles.image} source={require("../../assets/CardSet.jpg")} />
                         <View style={styles.infoColumn}>
-                            <View style={styles.infoRow}>
-                                <Text style={styles.text}>{cardList.name}</Text>
-                            </View>
+                            <Text style={styles.textCardName}>{cardList.name}</Text>
                             <Text style={styles.text}>{this._formatDate(cardList.examDate)}</Text>
                             <Text style={styles.text}>{cardList.desc}</Text>
                         </View>
@@ -118,15 +116,11 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'space-evenly'
     },
-    infoRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-evenly'
+    textCardName: {
+        fontWeight: 'bold',
+        fontSize: 18,
     },
     text: {
-        fontSize: 20
-    },
-    textSmall: {
-        fontSize: 16,
-        fontWeight: '100'
+        fontSize: 16
     }
 })

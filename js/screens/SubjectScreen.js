@@ -5,6 +5,8 @@ import SubjectListItem from '../components/SubjectListItem'
 import NewSubject from '../components/NewSubject'
 // import database
 import Firebase from '../Firebase';
+// import icons
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default class SubjectScreen extends Component {
 
@@ -16,11 +18,8 @@ export default class SubjectScreen extends Component {
         return {
             title: "Subjects",
             headerRight: (
-                <Button
-                    onPress={navigation.getParam('setCreateSubjectScreen')}
-                    title="Create"
-                    color="lightsalmon"
-                />
+                <Icon.Button iconStyle={{ marginRight: 0 }} name="add" color="lightsalmon" size="30" backgroundColor="transparent" onPress={navigation.getParam('setCreateSubjectScreen')}>
+                </Icon.Button>
             )
         }
     }
