@@ -76,8 +76,7 @@ export default class CardScreen extends Component {
         if (question) {
             // set card list data
             cards.push({ question: question, answer: answer });
-            // save quote within sql lite database
-
+            // save card to database
             this._saveCardToDB(question, answer, cards);
         } else {
             Alert.alert('Card question is empty',
@@ -85,7 +84,6 @@ export default class CardScreen extends Component {
                 [{ text: 'OK', style: 'cancel' }]);
         }
         this.setState({ cards, showCreateCardScreen: false });
-
     }
     _closeCreateCardScreen = () => {
         this.setState({ showCreateCardScreen: false });
@@ -101,6 +99,8 @@ export default class CardScreen extends Component {
             docRef = await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('cardLists').doc(cardList.id).collection('cards').add({ question, answer });
             // set new generated id to array entry
             cards[cards.length - 1].id = docRef.id;
+            // refresh list
+            this._refresh();
         } catch (error) {
             alert('No internet connection');
         }
@@ -155,12 +155,12 @@ export default class CardScreen extends Component {
                     data={this.state.cards}
                     keyExtractor={item => item.id}
                     ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
-                    ListEmptyComponent={() => (<Text style={styles.listEmpty}>No Data</Text>)}
+                    ListEmptyComponent={() => (<Text style={styles.listEmpty}>No cards exist</Text>)}
                     refreshing={this.state.isLoading}
                     onRefresh={this._refresh}
-                    renderItem={({ item }) => (
+                    renderItem={({ item, index }) => (
                         // render CardListItems
-                        <Card card={item} onDelete={this._deleteCard} onPress={() => this.props.navigation.navigate('CardDetailScreen', {
+                        <Card card={item} index={index} onDelete={this._deleteCard} onPress={() => this.props.navigation.navigate('CardDetailScreen', {
                             card: item, learnActive: false
                         })} />
                     )}

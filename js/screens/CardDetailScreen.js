@@ -205,6 +205,12 @@ export default class CardDetailScreen extends Component {
 
         // get the cards of the current deck
         this._retrieveCards();
+
+        // add focus event, called every time the site is focused for navigation
+        this.props.navigation.addListener('willFocus', () => {
+            debugger;
+            this._retrieveCards();
+        });
     };
 
     render() {
