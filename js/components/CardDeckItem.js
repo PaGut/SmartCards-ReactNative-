@@ -3,7 +3,7 @@ import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-na
 import Swipeout from 'react-native-swipeout';
 
 
-export default class CardListItem extends Component {
+export default class CardDeckItem extends Component {
 
     constructor(props) {
         super(props);
@@ -11,7 +11,7 @@ export default class CardListItem extends Component {
     }
 
     render() {
-        const { cardList, onPress, onDelete } = this.props;
+        const { CardDeck, onPress, onDelete } = this.props;
 
         const swipeSettings = {
             autoClose: true,
@@ -21,7 +21,7 @@ export default class CardListItem extends Component {
                 }
             },
             onOpen: (secId, rowId, direction) => {
-                this.setState({ activeRowKey: this.props.cardList.id });
+                this.setState({ activeRowKey: this.props.CardDeck.id });
             },
             right: [
                 {
@@ -54,9 +54,9 @@ export default class CardListItem extends Component {
                     <View style={styles.container}>
                         <Image style={styles.image} source={require("../../assets/CardSet.jpg")} />
                         <View style={styles.infoColumn}>
-                            <Text style={styles.textCardName}>{cardList.name}</Text>
-                            <Text style={styles.text}>{this._formatDate(cardList.examDate)}</Text>
-                            <Text style={styles.text}>{cardList.desc}</Text>
+                            <Text style={styles.textCardName}>{CardDeck.name}</Text>
+                            <Text style={styles.text}>{this._formatDate(CardDeck.examDate)}</Text>
+                            <Text style={styles.text}>{CardDeck.desc}</Text>
                         </View>
                     </View>
                 </TouchableOpacity>

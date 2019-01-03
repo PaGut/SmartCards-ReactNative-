@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, Modal, TextInput, KeyboardAvo
 import DatePicker from 'react-native-datepicker';
 
 
-export default class NewCardList extends Component {
+export default class NewCardDeck extends Component {
 
     state = { name: null, desc: null, examDate: new Date(), saveDisabled: true };
 
@@ -14,7 +14,7 @@ export default class NewCardList extends Component {
     onSavePressed = (name, desc, examDate) => {
         // call save property
         this.props.onSave(name, desc, examDate);
-        // reset value for cardList name
+        // reset value for CardDeck name
         this.setState({ name: null, desc: null, examDate: null });
     }
 
@@ -54,7 +54,7 @@ export default class NewCardList extends Component {
                 onSave(null, null, null)
             }} animationType="slide">
                 <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-                    <Text style={styles.text}>Create New CardList</Text>
+                    <Text style={styles.text}>Create New CardDeck</Text>
                     <TextInput style={[styles.input, { height: 80 }]} placeholder="Enter name" multiline={false}
                         underlineColorAndroid="transparent" onChangeText={(value) => this._inputChanged(value)}>
                     </TextInput>

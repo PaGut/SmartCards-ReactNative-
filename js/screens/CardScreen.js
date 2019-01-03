@@ -11,14 +11,14 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default class CardScreen extends Component {
 
-    state = { cardList: {}, cards: [], isLoading: true, showCreateCardScreen: false };
+    state = { CardDeck: {}, cards: [], isLoading: true, showCreateCardScreen: false };
 
-    // set cardList title at runtime
+    // set CardDeck title at runtime
     static navigationOptions = ({ navigation }) => {
-        const cardList = navigation.getParam('cardList');
+        const CardDeck = navigation.getParam('CardDeck');
 
         return {
-            title: cardList.name,
+            title: CardDeck.name,
             headerRight: (
                 <Icon.Button name="add" color="lightsalmon" size="30" iconStyle={{ marginRight: 0 }} backgroundColor="transparent" onPress={navigation.getParam('setCreateCard')}>
                 </Icon.Button>
@@ -43,14 +43,14 @@ export default class CardScreen extends Component {
 
     // Get cards from database
     _retrieveCards = async () => {
-        let cardList = this.props.navigation.getParam('cardList');
+        let CardDeck = this.props.navigation.getParam('CardDeck');
 
         let cards = [];
-        let email = cardList.subjectData.userData.email;
-        let subjectName = cardList.subjectData.name;
+        let email = CardDeck.subjectData.userData.email;
+        let subjectName = CardDeck.subjectData.name;
 
-        // read data asynchron from firebase db for specific cardList
-        let query = await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('cardLists').doc(cardList.id).collection('cards').get();
+        // read data asynchron from firebase db for specific CardDeck
+        let query = await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('CardDecks').doc(CardDeck.id).collection('cards').get();
 
         // add every read entry to array of cards
         query.forEach(card => {
@@ -58,11 +58,11 @@ export default class CardScreen extends Component {
                 id: card.id,
                 question: card.data().question,
                 answer: card.data().answer,
-                cardData: cardList
+                cardData: CardDeck
             });
         });
         // neuen state setzen und loading indicator false setzen
-        this.setState({ cardList, cards, isLoading: false });
+        this.setState({ CardDeck, cards, isLoading: false });
     }
 
     _setCreateCard = () => {
@@ -90,13 +90,13 @@ export default class CardScreen extends Component {
     }
 
     _saveCardToDB = async (question, answer, cards) => {
-        let { cardList } = this.state;
-        let email = cardList.subjectData.userData.email;
-        let subjectName = cardList.subjectData.name;
+        let { CardDeck } = this.state;
+        let email = CardDeck.subjectData.userData.email;
+        let subjectName = CardDeck.subjectData.name;
 
         try {
             //save data to database collection card
-            docRef = await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('cardLists').doc(cardList.id).collection('cards').add({ question, answer });
+            docRef = await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('CardDecks').doc(CardDeck.id).collection('cards').add({ question, answer });
             // set new generated id to array entry
             cards[cards.length - 1].id = docRef.id;
             // refresh list
@@ -110,13 +110,13 @@ export default class CardScreen extends Component {
     /* delete selected subject from firebase DB */
     _deleteCard = async (deleteRow) => {
 
-        let { cardList, userData } = this.state;
-        let email = cardList.subjectData.userData.email;
-        let subjectName = cardList.subjectData.name;
+        let { CardDeck, userData } = this.state;
+        let email = CardDeck.subjectData.userData.email;
+        let subjectName = CardDeck.subjectData.name;
 
         try {
             // add subject to specific user collection
-            docRef = await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('cardLists').doc(cardList.id).collection('cards').doc(deleteRow).delete();
+            docRef = await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('CardDecks').doc(CardDeck.id).collection('cards').doc(deleteRow).delete();
             // set new generated id to array entry
             this.setState({ isLoading: true });
             this._retrieveCards();
@@ -141,7 +141,7 @@ export default class CardScreen extends Component {
                 </View>);
         }
 
-        let cardList = this.props.navigation.getParam('cardList');
+        let CardDeck = this.props.navigation.getParam('CardDeck');
 
         return (
             <View style={styles.container} >
@@ -159,7 +159,7 @@ export default class CardScreen extends Component {
                     refreshing={this.state.isLoading}
                     onRefresh={this._refresh}
                     renderItem={({ item, index }) => (
-                        // render CardListItems
+                        // render CardDeckItems
                         <Card card={item} index={index} onDelete={this._deleteCard} onPress={() => this.props.navigation.navigate('CardDetailScreen', {
                             card: item, learnActive: false
                         })} />

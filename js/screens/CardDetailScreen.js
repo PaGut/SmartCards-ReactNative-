@@ -15,7 +15,7 @@ export default class CardDetailScreen extends Component {
         question: null, answer: null,
         currentCount: null, maxCount: null,
         editMode: false, learnActive: false,
-        ratingCount: null
+        ratings: []
     };
 
     // define card header at runtime
@@ -62,8 +62,7 @@ export default class CardDetailScreen extends Component {
     // set next card
     _nextCard = () => {
 
-        var { cards, currentCount, maxCount, learnActive, ratingCount } = this.state;
-        let score = 0;
+        var { cards, currentCount, maxCount, learnActive, ratings } = this.state;
 
         // set changed content if edit mode is active
         this._saveChangesInEditMode();
@@ -72,9 +71,8 @@ export default class CardDetailScreen extends Component {
         if (currentCount === cards.length) {
             // Learn Mode active
             if (learnActive) {
-                // show result screen
-                score = ratingCount / cards.length;
-                this.props.navigation.navigate('LearnResultScreen', { score: score });
+
+                this.props.navigation.navigate('LearnResultScreen', { ratings: ratings });
                 //stop processing here because the learning-process is finished now
                 return;
             }
@@ -132,8 +130,8 @@ export default class CardDetailScreen extends Component {
         let email = activeCard.cardData.subjectData.userData.email;
         let subjectName = activeCard.cardData.subjectData.name;
 
-        // read data asynchron from firebase db for specific cardList   
-        let query = await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('cardLists').doc(activeCard.cardData.id).collection('cards').get();
+        // read data asynchron from firebase db for specific CardDeck   
+        let query = await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('CardDecks').doc(activeCard.cardData.id).collection('cards').get();
 
         let cards = [];
         // add every read entry to array of cards
@@ -164,8 +162,12 @@ export default class CardDetailScreen extends Component {
     }
 
     _onFinishRating = (rating) => {
-        this.setState({ ratingCount: this.state.ratingCount + rating });
-        this._nextCard();
+        debugger;
+        let ratings = this.state.ratings;
+        ratings.push(rating);
+
+        this.setState({ ratings: ratings }, () => this._nextCard());
+
     }
 
     _saveChangesInEditMode = async () => {
@@ -185,7 +187,7 @@ export default class CardDetailScreen extends Component {
 
             // update edited answer and question within database
             try {
-                await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('cardLists').doc(cardDeck.id).collection('cards').doc(activeCard.id).update({ answer: answer, question: question });
+                await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('CardDecks').doc(cardDeck.id).collection('cards').doc(activeCard.id).update({ answer: answer, question: question });
             } catch (error) {
 
             }
@@ -208,7 +210,6 @@ export default class CardDetailScreen extends Component {
 
         // add focus event, called every time the site is focused for navigation
         this.props.navigation.addListener('willFocus', () => {
-            debugger;
             this._retrieveCards();
         });
     };

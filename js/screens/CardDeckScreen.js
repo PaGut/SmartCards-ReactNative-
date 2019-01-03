@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Alert, ActivityIndicator, Button, Dimensions, View, FlatList, ScrollView, StyleSheet, Text } from 'react-native';
 // import custom components
-import CardListItem from '../components/CardListItem'
-import NewCardList from '../components/NewCardList'
+import CardDeckItem from '../components/CardDeckItem'
+import NewCardDeck from '../components/NewCardDeck'
 // import database
 import Firebase from '../Firebase';
 // import icons
@@ -10,123 +10,123 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default class CardDeckScreen extends Component {
 
-    state = { subject: {}, cardLists: [], isLoading: true, showCreateCardListScreen: false };
-    debugger;
+    state = { subject: {}, CardDecks: [], isLoading: true, showCreateCardDeckScreen: false };
+
     // set subject title at runtime
     static navigationOptions = ({ navigation }) => {
         const subject = navigation.getParam('subject');
         return {
             title: subject.name,
             headerRight: (
-                <Icon.Button name="add" color="lightsalmon" size="30" iconStyle={{ marginRight: 0 }} backgroundColor="transparent" onPress={navigation.getParam('setCreateCardListScreen')}>
+                <Icon.Button name="add" color="lightsalmon" size="30" iconStyle={{ marginRight: 0 }} backgroundColor="transparent" onPress={navigation.getParam('setCreateCardDeckScreen')}>
                 </Icon.Button>
             )
         };
     };
 
     // hide creation card list screen
-    _closeCreateCardListScreen = () => {
-        this.setState({ showCreateCardListScreen: false });
+    _closeCreateCardDeckScreen = () => {
+        this.setState({ showCreateCardDeckScreen: false });
     }
 
     // show creation card list screen
-    _setCreateCardListScreen = () => {
-        this.setState({ showCreateCardListScreen: true });
+    _setCreateCardDeckScreen = () => {
+        this.setState({ showCreateCardDeckScreen: true });
     }
 
     /* add new subject to list */
-    _addCardList = (name, desc, examDate) => {
+    _addCardDeck = (name, desc, examDate) => {
 
-        let { cardLists } = this.state;
+        let { CardDecks } = this.state;
         // check if card list name is empty
         if (name) {
             debugger;
             // set card list data
-            cardLists.push({ name: name, desc: desc, examDate: examDate });
+            CardDecks.push({ name: name, desc: desc, examDate: examDate });
             // save quote within sql lite database
             debugger;
-            this._saveCardListToDB(name, desc, examDate, cardLists);
+            this._saveCardDeckToDB(name, desc, examDate, CardDecks);
         } else {
-            Alert.alert('CardList name is empty',
-                'Please enter a CardList name',
+            Alert.alert('CardDeck name is empty',
+                'Please enter a CardDeck name',
                 [{ text: 'OK', style: 'cancel' }]);
         }
-        this.setState({ cardLists, showCreateCardListScreen: false });
+        this.setState({ CardDecks, showCreateCardDeckScreen: false });
     }
 
-    /* save cardList to firebase DB */
-    _saveCardListToDB = async (name, desc, examDate, cardLists) => {
+    /* save CardDeck to firebase DB */
+    _saveCardDeckToDB = async (name, desc, examDate, CardDecks) => {
 
         let { subject } = this.state;
 
         try {
             // save data to database collection card lists            
-            docRef = await Firebase.db.collection('user').doc(subject.userData.email).collection('subjects').doc(subject.name).collection('cardLists').add({ name, desc, examDate });
+            docRef = await Firebase.db.collection('user').doc(subject.userData.email).collection('subjects').doc(subject.name).collection('CardDecks').add({ name, desc, examDate });
             // set new generated id to array entry
-            cardLists[cardLists.length - 1].id = docRef.id;
+            CardDecks[CardDecks.length - 1].id = docRef.id;
         } catch (error) {
             alert('No internet connection');
         }
-        this.setState({ cardLists });
+        this.setState({ CardDecks });
     }
 
     /* refreshing list after swipe down */
     _refresh = () => {
         this.setState({ isLoading: true });
-        this._retrieveCardLists();
+        this._retrieveCardDecks();
     }
 
     /* retrieve card lists from database */
-    _retrieveCardLists = async () => {
+    _retrieveCardDecks = async () => {
 
         // get active subject        
         let subject = this.props.navigation.getParam('subject');
 
-        let cardLists = [];
+        let CardDecks = [];
         // read data asynchron from firebase db                
-        let query = await Firebase.db.collection('user').doc(subject.userData.email).collection('subjects').doc(subject.name).collection('cardLists').get();
+        let query = await Firebase.db.collection('user').doc(subject.userData.email).collection('subjects').doc(subject.name).collection('CardDecks').get();
 
         // add every read entry to array of subjects
-        query.forEach(cardList => {
-            cardLists.push({
-                id: cardList.id,
-                name: cardList.data().name,
-                desc: cardList.data().desc,
-                examDate: cardList.data().examDate,
+        query.forEach(CardDeck => {
+            CardDecks.push({
+                id: CardDeck.id,
+                name: CardDeck.data().name,
+                desc: CardDeck.data().desc,
+                examDate: CardDeck.data().examDate,
                 subjectData: subject
 
             });
         });
         // neuen state setzen und loading indicator false setzen
-        this.setState({ subject, cardLists, isLoading: false });
+        this.setState({ subject, CardDecks, isLoading: false });
     }
 
     /* delete selected card list item from firebase DB */
-    _deleteCardListItem = async (deleteRow) => {
+    _deleteCardDeckItem = async (deleteRow) => {
 
         let { subject } = this.state;
 
         try {
             // add subject to specific user collection
-            docRef = await Firebase.db.collection('user').doc(subject.userData.email).collection('subjects').doc(subject.name).collection('cardLists').doc(deleteRow).delete();
+            docRef = await Firebase.db.collection('user').doc(subject.userData.email).collection('subjects').doc(subject.name).collection('CardDecks').doc(deleteRow).delete();
             // set new generated id to array entry
             this.setState({ isLoading: true });
-            this._retrieveCardLists();
+            this._retrieveCardDecks();
 
             //subjects[subjects.length - 1].id = docRef.id;
         } catch (error) {
-            alert('CardList does not exist');
+            alert('CardDeck does not exist');
         }
     }
 
     /* called after view is called */
     componentDidMount() {
         // set function to static navigation option parameter
-        this.props.navigation.setParams({ setCreateCardListScreen: this._setCreateCardListScreen });
+        this.props.navigation.setParams({ setCreateCardDeckScreen: this._setCreateCardDeckScreen });
         // init firebase object        
         Firebase.init();
-        // get cardLists for active user from firebase db
-        this._retrieveCardLists();
+        // get CardDecks for active user from firebase db
+        this._retrieveCardDecks();
     }
 
     render() {
@@ -144,20 +144,20 @@ export default class CardDeckScreen extends Component {
             <ScrollView contentContainerStyle={styles.container} style={styles.scrollView}>
                 <View style={styles.container}>
                     <FlatList
-                        data={this.state.cardLists}
+                        data={this.state.CardDecks}
                         keyExtractor={item => item.id}
                         ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
                         ListEmptyComponent={() => (<Text style={styles.listEmpty}>No Card Deck exists</Text>)}
                         refreshing={this.state.isLoading}
                         onRefresh={this._refresh}
                         renderItem={({ item, index }) => (
-                            // render CardListItems
-                            <CardListItem cardList={item} index={index} onDelete={this._deleteCardListItem} onPress={() => this.props.navigation.navigate('CardScreen', {
-                                cardList: item
-                            })}></CardListItem>
+                            // render CardDeckItems
+                            <CardDeckItem CardDeck={item} index={index} onDelete={this._deleteCardDeckItem} onPress={() => this.props.navigation.navigate('CardScreen', {
+                                CardDeck: item
+                            })}></CardDeckItem>
                         )}
                     />
-                    <NewCardList visible={this.state.showCreateCardListScreen} onSave={this._addCardList} onCancel={this._closeCreateCardListScreen} />
+                    <NewCardDeck visible={this.state.showCreateCardDeckScreen} onSave={this._addCardDeck} onCancel={this._closeCreateCardDeckScreen} />
                 </View>
             </ScrollView>
         );
