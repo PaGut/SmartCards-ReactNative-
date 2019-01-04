@@ -1,27 +1,34 @@
 import React, { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { BarChart, XAxis } from 'react-native-svg-charts';
 import * as scale from 'd3-scale';
 
 export default class LearnResultScreen extends Component {
+    state = { averageRating: 0, ratings: [] };
 
     // define card header at runtime
-    static navigationOptions = ({ navigation }) => {
+    // static navigationOptions = ({ navigation }) => {
+    // }
+    // Called before the view is loaded
+    componentWillMount() {
+
+        //determine Ratingdata and write it into state
+        this._determineResult();
     }
 
     render() {
-        const data = this._getResult();
+        const ratings = this.state.ratings;
         const xAxisData = ["Terrible", "Bad", "OK", "Good", "Perfect"];
 
-        // data.push(this.props.navigation.getParam('ratings');
         return (
             <View style={styles.container}>
-                {/* <Text>{this.props.navigation.getParam('score')}</Text> */}
+                <Text>{this.state.averageRating}</Text>
                 <BarChart
                     style={styles.barChart}
-                    data={data}
+                    data={ratings}
                     svg={{ fill: 'lightsalmon' }}
-                    contentInset={{ top: 30, bottom: 30 }}
+                    contentInset={{ top: 10, bottom: 10 }}
+                    xScale={scale.scaleBand}
                 />
 
                 <XAxis
@@ -29,19 +36,24 @@ export default class LearnResultScreen extends Component {
                     data={xAxisData}
                     scale={scale.scaleBand}
                     formatLabel={(_, index) => xAxisData[index]}
+                    contentInset={{ top: 10, bottom: 10 }}
                     labelStyle={{ color: 'black' }}
                 />
             </View>
         )
     }
-    _getResult = () => {
+    _determineResult = () => {
         let ratings = this.props.navigation.getParam('ratings');
         let ratingResult = [0, 0, 0, 0, 0];//count every category from the raiting
+        let averageRating = this.state.averageRating;
 
         ratings.forEach(element => {
             ratingResult[element - 1] = ratingResult[element - 1] + 1;
+            averageRating = averageRating + element;
         });
-        return ratingResult;
+        averageRating = averageRating / ratings.length;
+
+        this.setState({ averageRating: averageRating, ratings: ratingResult });
     }
 }
 const styles = StyleSheet.create({
@@ -51,6 +63,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     barChart: {
-        height: 200,
+        flex: 1,
     }
 });

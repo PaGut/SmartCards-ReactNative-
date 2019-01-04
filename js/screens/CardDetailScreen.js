@@ -161,8 +161,8 @@ export default class CardDetailScreen extends Component {
         this.props.navigation.setParams({ modeButtonTitle: sModeButtonTitle, title: sTitle });
     }
 
+    //after a Card was rated
     _onFinishRating = (rating) => {
-        debugger;
         let ratings = this.state.ratings;
         ratings.push(rating);
 
