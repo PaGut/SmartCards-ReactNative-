@@ -61,7 +61,6 @@ export default class CardDetailScreen extends Component {
 
     // set next card
     _nextCard = () => {
-
         var { cards, currentCount, maxCount, learnActive, ratings } = this.state;
 
         // set changed content if edit mode is active
@@ -248,7 +247,8 @@ export default class CardDetailScreen extends Component {
                 <CardButtons hide={learnActive} previous={this._previousCard} next={this._nextCard} />
 
                 {/* Show Rating bar with active learning */}
-                <RatingBar visible={learnActive} onFinishRating={this._onFinishRating} defaultRating={0} />
+                <RatingBar visible={learnActive} onFinishRating={this._onFinishRating} defaultRating={1} maxRating={5} />
+
             </KeyboardAvoidingView>
         );
     }

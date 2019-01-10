@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Badge, Text } from 'react-native';
 import { BarChart, XAxis } from 'react-native-svg-charts';
 import * as scale from 'd3-scale';
 
 export default class LearnResultScreen extends Component {
-    state = { averageRating: 0, ratings: [] };
 
-    // define card header at runtime
-    // static navigationOptions = ({ navigation }) => {
-    // }
+    state = { averageRating: 0, ratings: [] };
     // Called before the view is loaded
     componentWillMount() {
 
@@ -22,7 +19,11 @@ export default class LearnResultScreen extends Component {
 
         return (
             <View style={styles.container}>
-                <Text>{this.state.averageRating}</Text>
+                <View style={styles.result}>
+                    {/* The array begins at 0 so the entry in xAxisData with the id averageRating - 1 is relevant  */}
+                    <Text style={styles.resultText}>Your overall Learning Result is: {xAxisData[this.state.averageRating - 1]}</Text>
+                </View>
+
                 <BarChart
                     style={styles.barChart}
                     data={ratings}
@@ -33,12 +34,21 @@ export default class LearnResultScreen extends Component {
 
                 <XAxis
                     style={{ marginTop: 10 }}
+                    data={ratings}
+                    scale={scale.scaleBand}
+                    formatLabel={(_, index) => ratings[index]}
+                    contentInset={{ top: 10, bottom: 10 }}
+                    labelStyle={{ color: 'black' }}
+                />
+                <XAxis
+                    style={{ marginTop: 10 }}
                     data={xAxisData}
                     scale={scale.scaleBand}
                     formatLabel={(_, index) => xAxisData[index]}
                     contentInset={{ top: 10, bottom: 10 }}
                     labelStyle={{ color: 'black' }}
                 />
+
             </View>
         )
     }
@@ -53,6 +63,8 @@ export default class LearnResultScreen extends Component {
         });
         averageRating = averageRating / ratings.length;
 
+        averageRating = Math.round(averageRating);
+
         this.setState({ averageRating: averageRating, ratings: ratingResult });
     }
 }
@@ -64,5 +76,24 @@ const styles = StyleSheet.create({
     },
     barChart: {
         flex: 1,
+    },
+    badge: {
+        flex: 1,
+        backgroundColor: 'lightsalmon'
+    },
+    result: {
+        marginTop: 10,
+        justifyContent: 'flex-start',
+        backgroundColor: "lightsalmon",
+        alignItems: 'center',
+        paddingVertical: 15,
+        borderRadius: 40,
+        marginBottom: 10
+    },
+    resultText: {
+        textAlign: 'center',
+        color: 'white',
+        fontWeight: 'bold'
     }
+
 });

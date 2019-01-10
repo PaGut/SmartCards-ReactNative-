@@ -40,11 +40,9 @@ export default class CardDeckScreen extends Component {
         let { CardDecks } = this.state;
         // check if card list name is empty
         if (name) {
-            debugger;
             // set card list data
             CardDecks.push({ name: name, desc: desc, examDate: examDate });
             // save quote within sql lite database
-            debugger;
             this._saveCardDeckToDB(name, desc, examDate, CardDecks);
         } else {
             Alert.alert('CardDeck name is empty',
