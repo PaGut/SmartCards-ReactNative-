@@ -15,6 +15,7 @@ export default class RatingBar extends Component {
 
         //Filled star
         this.star = '../../assets/star_filled.png';
+
         //Empty star
         this.starEmpty = '../../assets/star_empty.png';
     }
@@ -48,11 +49,9 @@ export default class RatingBar extends Component {
                     onPress={this._updateRating.bind(this, i)}>
                     <Image
                         style={styles.starImage}
-                        source={
-                            i <= filledStars
-                                ? { uri: this.star }
-                                : { uri: this.starEmpty }
-                        }
+                        source={i <= filledStars
+                            ? require('../../assets/star_filled.png')
+                            : require('../../assets/star_empty.png')}
                     />
                 </TouchableOpacity>
             );
@@ -87,7 +86,7 @@ const styles = StyleSheet.create({
     },
     button: {
         backgroundColor: "lightsalmon",
-        alignItems: 'center',
+        alignItems: 'stretch',
         paddingVertical: 15,
         borderRadius: 40,
         marginBottom: 10
@@ -100,7 +99,7 @@ const styles = StyleSheet.create({
     },
     textStyle: {
         textAlign: 'center',
-        fontSize: 23,
+        fontSize: 15,
         color: 'gold',
         marginTop: 15,
     },
