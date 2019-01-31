@@ -28,6 +28,7 @@ export default class LearnResultScreen extends Component {
                     style={styles.barChart}
                     data={ratings}
                     svg={{ fill: 'lightsalmon' }}
+                    yAccessor={({ item }) => item.value}
                     contentInset={{ top: 10, bottom: 10 }}
                     xScale={scale.scaleBand}
                 />
@@ -54,11 +55,21 @@ export default class LearnResultScreen extends Component {
     }
     _determineResult = () => {
         let ratings = this.props.navigation.getParam('ratings');
-        let ratingResult = [0, 0, 0, 0, 0];//count every category from the raiting
+        //let ratingResult = [0, 0, 0, 0, 0];//count every category from the raiting
+        let ratingResult = [];
+        let result = { value: 0, svg: { fill: null } };
         let averageRating = this.state.averageRating;
 
         ratings.forEach(element => {
-            ratingResult[element - 1] = ratingResult[element - 1] + 1;
+            result = ratingResult[element - 1];
+
+            result.value = result.value + 1;
+            result.svg.fill = 'rgba(134, 65, 244, 0.5)';
+            ratingResult[element - 1] = result;
+            // ratingResult[element - 1].value = ratingResult[element - 1].value + 1;
+            // ratingResult[element - 1].svg = {
+            //     fill: 'rgba(134, 65, 244, 0.5)'
+            // };
             averageRating = averageRating + element;
         });
         averageRating = averageRating / ratings.length;
