@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import {
-    Alert, StyleSheet, Image, TextInput, View, Keyboard,
+    Alert, StyleSheet, TextInput, View, Keyboard,
     SafeAreaView, Text, Button, KeyboardAvoidingView,
     StatusBar, TouchableWithoutFeedback, TouchableOpacity
 } from "react-native";
@@ -52,14 +52,14 @@ export default class SignIn extends Component {
                 }
             } catch (error) {
                 // open alert popup
-                Alert.alert('User does not exist',
-                    'Please check you login data',
+                Alert.alert('Benutzer existiert nicht',
+                    'Bitte überprüfen Sie Ihre Anmeldedaten',
                     [{ text: 'OK' }]);
             }
         } else {
             // open alert popup
-            Alert.alert('Username or Password empty',
-                'Please fill Username and password',
+            Alert.alert('Benutzername oder Passwort fehlt',
+                'Bitte prüfen Sie ob Benutzername und Passwort befüllt sind',
                 [{ text: 'OK' }]);
         }
     }
@@ -83,7 +83,7 @@ export default class SignIn extends Component {
                             <View style={styles.infoContainer}>
                                 <TextInput style={styles.input}
                                     value="Patrick"
-                                    placeholder="Enter username/email"
+                                    placeholder="Benutzername/Email eingeben"
                                     placeholderColor='lightsalmon'
                                     keyboardType='email-address'
                                     returnyKeyType='next'
@@ -92,7 +92,7 @@ export default class SignIn extends Component {
                                     onChangeText={(value) => this.setState({ username: value })} />
                                 <TextInput style={[styles.input, { marginTop: 10 }]}
                                     value="diablo"
-                                    placeholder="Enter password"
+                                    placeholder="Passwort eingeben"
                                     placeholderColor='lightsalmon'
                                     returnyKeyType='go'
                                     secureTextEntry={true}
@@ -101,11 +101,11 @@ export default class SignIn extends Component {
                                 <TouchableOpacity style={styles.buttonContainer} onPress={() => {
                                     this._handleLogin()
                                 }}>
-                                    <Text style={styles.buttonText}>SIGN IN</Text>
+                                    <Text style={styles.buttonText}>Anmelden</Text>
                                 </TouchableOpacity>
                                 <Button
                                     buttonStyle={{ marginTop: 30 }}
-                                    title="Sign Up"
+                                    title="Registrieren"
                                     onPress={() => {
                                         this.props.navigation.navigate("SignUp")
                                     }}

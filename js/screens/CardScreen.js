@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, ActivityIndicator, Button, View, FlatList, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Alert, ActivityIndicator, View, FlatList, StyleSheet, Text } from 'react-native';
 // import database
 import Firebase from '../Firebase';
 // import Card
@@ -79,8 +79,8 @@ export default class CardScreen extends Component {
             // save card to database
             this._saveCardToDB(question, answer, fileDownloadUrl, cards);
         } else {
-            Alert.alert('Card question is empty',
-                'Please enter a Card question',
+            Alert.alert('Frage ist nicht befüllt',
+                'Bitte tragen Sie eine Frage ein',
                 [{ text: 'OK', style: 'cancel' }]);
         }
         this.setState({ cards, showCreateCardScreen: false });
@@ -102,7 +102,7 @@ export default class CardScreen extends Component {
             // refresh list
             this._refresh();
         } catch (error) {
-            alert('No internet connection');
+            alert('Keine Internetverbindung, Service-Aufruf fehlgeschlagen.');
         }
         this.setState({ cards });
     }
@@ -123,7 +123,7 @@ export default class CardScreen extends Component {
 
             //subjects[subjects.length - 1].id = docRef.id;
         } catch (error) {
-            alert('Card does not exist');
+            alert('Karte existiert nicht.');
         }
     }
 
@@ -155,7 +155,7 @@ export default class CardScreen extends Component {
                     data={this.state.cards}
                     keyExtractor={item => item.id}
                     ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
-                    ListEmptyComponent={() => (<Text style={styles.listEmpty}>No cards exist</Text>)}
+                    ListEmptyComponent={() => (<Text style={styles.listEmpty}>Bitte erstellen Sie Ihre erste Karte</Text>)}
                     refreshing={this.state.isLoading}
                     onRefresh={this._refresh}
                     renderItem={({ item, index }) => (

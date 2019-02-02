@@ -55,22 +55,22 @@ export default class NewCardDeck extends Component {
             }} animationType="slide">
                 <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
                     <Text style={styles.text}>Create New CardDeck</Text>
-                    <TextInput style={[styles.input, { height: 80 }]} placeholder="Enter name" multiline={false}
+                    <TextInput style={[styles.input, { height: 80 }]} placeholder="Name eingeben" multiline={false}
                         underlineColorAndroid="transparent" onChangeText={(value) => this._inputChanged(value)}>
                     </TextInput>
-                    <TextInput style={[styles.input, { height: 80 }]} placeholder="Enter description" multiline={false}
+                    <TextInput style={[styles.input, { height: 80 }]} placeholder="Beschreibung eingeben" multiline={false}
                         underlineColorAndroid="transparent" onChangeText={(value) => this.setState({ desc: value })}>
                     </TextInput>
                     <DatePicker
                         style={styles.datePicker}
                         date={this.state.examDate}
                         mode="date"
-                        placeholder="Select date"
+                        placeholder="Datum wählen"
                         format="YYYY-MM-DD"
                         minDate="2018-01-01"
                         maxDate="2020-12-31"
-                        confirmBtnText="Confirm"
-                        cancelBtnText="Cancel"
+                        confirmBtnText="Bestätigen"
+                        cancelBtnText="Abbrechen"
                         customStyles={{
                             dateIcon: {
                                 position: 'absolute',

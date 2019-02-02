@@ -48,16 +48,16 @@ export default class NewSubject extends Component {
                 onSave(null)
             }} animationType="slide">
                 <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-                    <Text style={styles.text}>Create New Subject</Text>
-                    <TextInput style={[styles.input, { height: 150 }]} placeholder="Subject Name" multiline={false}
+                    <Text style={styles.text}>Lernfach anlegen</Text>
+                    <TextInput style={[styles.input, { height: 150 }]} placeholder="Fach Name" multiline={false}
                         underlineColorAndroid="transparent" onChangeText={(value) => this._inputChanged(value)}>
                     </TextInput>
                     <View>
                         <TouchableOpacity disabled={saveDisabled} style={[styles.button, saveBtnStyle.color]} onPress={() => this._savePressed(name)}>
-                            <Text style={styles.buttonText}>Save</Text>
+                            <Text style={styles.buttonText}>Speichern</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.button} onPress={() => this.onCancelPressed()}>
-                            <Text style={styles.buttonText}>Cancel</Text>
+                            <Text style={styles.buttonText}>Abbrechen</Text>
                         </TouchableOpacity>
                     </View>
                 </KeyboardAvoidingView>

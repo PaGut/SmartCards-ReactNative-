@@ -19,11 +19,12 @@ export default class Firebase {
         if (!firebase.apps.length) {
             firebase.initializeApp(config);
         }
+        // init firebase databae
         Firebase.db = firebase.firestore();
         const settings = { timestampsInSnapshots: true };
         Firebase.db.settings(settings);
 
-        // Get a reference to the storage service, which is used to create references in your storage bucket
+        // init firebase file storage
         Firebase.storage = firebase.storage();
     }
 }

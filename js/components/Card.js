@@ -28,12 +28,12 @@ export default class Card extends Component {
                     onPress: () => {
                         const deletingRow = this.state.activeRowKey;
                         Alert.alert(
-                            'Delete',
-                            'Are you sure you want to delete?',
+                            'Löschen',
+                            'Möchten Sie das Objekt wirklich löschen?',
                             [
-                                { text: 'No', onPress: () => console.log('Canceled'), style: 'cancel' },
+                                { text: 'Nein', onPress: () => console.log('Canceled'), style: 'cancel' },
                                 {
-                                    text: 'Yes', onPress: () => {
+                                    text: 'Ja', onPress: () => {
                                         onDelete(deletingRow);
                                     }
                                 },
@@ -41,7 +41,7 @@ export default class Card extends Component {
                             { cancelable: true }
                         );
                     },
-                    text: 'Delete', type: 'delete'
+                    text: 'Löschen', type: 'delete'
                 }
             ],
             rowId: this.props.index,
@@ -50,7 +50,7 @@ export default class Card extends Component {
                 onPress: () => {
                     this.props.onStartLearning();
                 },
-                text: 'Learn', type: 'primary'
+                text: 'Lernen', type: 'primary'
             }]
         };
 

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { Card, Button, Text } from "react-native-elements";
+import { Card, Text } from "react-native-elements";
 
 
 export default class Profile extends Component {
@@ -25,7 +25,7 @@ export default class Profile extends Component {
                         <Text style={{ color: "white", fontSize: 28 }}>PG</Text>
                     </View>
                     <TouchableOpacity onPress={() => this.props.navigation.navigate('SignIn')}>
-                        <Text style={styles.buttonText}>SIGN OUT</Text>
+                        <Text style={styles.buttonText}>Logout</Text>
                     </TouchableOpacity>
                 </Card>
             </View>

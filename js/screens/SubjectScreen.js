@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, StyleSheet, ActivityIndicator, FlatList, Text, View, Button, TouchableOpacity } from 'react-native';
+import { Alert, StyleSheet, ActivityIndicator, FlatList, Text, View } from 'react-native';
 // import custom components
 import SubjectListItem from '../components/SubjectListItem'
 import NewSubject from '../components/NewSubject'
@@ -16,7 +16,7 @@ export default class SubjectScreen extends Component {
     // set header toolbar title
     static navigationOptions = ({ navigation }) => {
         return {
-            title: "Subjects",
+            title: "Lernfächer",
             headerRight: (
                 <Icon.Button iconStyle={{ marginRight: 0 }} name="add" color="lightsalmon" size="30" backgroundColor="transparent" onPress={navigation.getParam('setCreateSubjectScreen')}>
                 </Icon.Button>
@@ -74,7 +74,7 @@ export default class SubjectScreen extends Component {
             // set new generated id to array entry
             subjects[subjects.length - 1].id = docRef.id;
         } catch (error) {
-            alert('No internet connection');
+            alert('Keine Internetverbindung, Service-Aufruf fehlgeschlagen.');
         }
     }
 
@@ -92,7 +92,7 @@ export default class SubjectScreen extends Component {
 
             //subjects[subjects.length - 1].id = docRef.id;
         } catch (error) {
-            alert('Subject does not exist');
+            alert('Fach existiert nicht');
         }
     }
 
@@ -134,7 +134,7 @@ export default class SubjectScreen extends Component {
                     data={this.state.subjects}
                     keyExtractor={item => item.name}
                     ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
-                    ListEmptyComponent={() => (<Text style={styles.listEmpty}>No Data</Text>)}
+                    ListEmptyComponent={() => (<Text style={styles.listEmpty}>Bitte erstellen Sie Ihr erstes Lernfach</Text>)}
                     refreshing={this.state.isLoading}
                     onRefresh={this._refresh}
                     renderItem={({ item, index }) => (

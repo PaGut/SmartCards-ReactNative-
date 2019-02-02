@@ -38,7 +38,7 @@ export default class RatingBar extends Component {
         let { cardValue } = this.props;
         // create parameters for speach to test
         var oMap = {
-            language: 'en-US',
+            language: 'de-DE',
         }
         // execute text to speech
         Speech.speak(cardValue, oMap);
@@ -48,7 +48,7 @@ export default class RatingBar extends Component {
         let ratingBar = [];
 
         const { filledStars, maxRating } = this.state;
-        const label = ["Terrible", "Bad", "OK", "Good", "Perfect"];
+        const label = ["Schrecklich", "Schlecht", "OK", "Gut", "Perfekt"];
 
         if (this.props.visible === false) {
             return (<View />);

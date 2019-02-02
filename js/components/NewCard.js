@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
 import { ImagePicker } from 'expo';
 // import database
 import Firebase from '../Firebase';
 
 export default class NewCard extends Component {
 
-    state = { question: null, answer: null, fileDownloadUrl: null, saveDisabled: true };
+    state = { question: null, answer: null, fileDownloadUrl: null, saveDisabled: true, isLoading: false };
 
     onSavePressed = (question, answer, fileDownloadUrl) => {
         //call save property
@@ -34,6 +34,7 @@ export default class NewCard extends Component {
     }
 
     _takePicture = async () => {
+        // call native camera function
         let result = await ImagePicker.launchCameraAsync({
             base64: true,
             quality: 1,
@@ -46,9 +47,12 @@ export default class NewCard extends Component {
 
     _uploadFile = async (result) => {
 
-        var ref = Firebase.storage.ref().child("images/images.jpg");
+        // create filename with timestamp
+        var sFilename = `images/pic_${Date.now()}.jpg`;
+        // put base64 reference within firebase storage
+        var ref = Firebase.storage.ref().child(sFilename);
         var uploadTask = ref.putString(result.base64, "base64");
-        //var uploadTask = ref.put(blob, metadata);
+        this.setState({ isLoading: true });
 
         uploadTask.on('state_changed', function (snapshot) {
             // Observe state change events such as progress, pause, and resume
@@ -65,12 +69,13 @@ export default class NewCard extends Component {
             }
         }, function (error) {
             // Handle unsuccessful uploads
-        }, function () {
+            this.setState({ isLoading: false });
+        }.bind(this), function () {
             // Handle successful uploads on complete            
             uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
                 console.log('File available at', downloadURL);
                 // set download to url
-                this.setState({ fileDownloadUrl: downloadURL });
+                this.setState({ fileDownloadUrl: downloadURL, isLoading: false });
             }.bind(this));
         }.bind(this));
     }
@@ -90,6 +95,7 @@ export default class NewCard extends Component {
                 backgroundColor: saveDisabled ? 'transparent' : 'lightsalmon'
             }
         });
+
         return (
             <Modal visible={visible} onRequestClose={() => {
                 this.setState({ question: null, answer: null, saveDisabled: null });
@@ -97,22 +103,22 @@ export default class NewCard extends Component {
             }
             } animationType="slide" >
                 <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-                    <Text style={styles.text}>Create New Card</Text>
-                    <TextInput style={styles.input} placeholder="Enter question" multiline={false}
+                    <Text style={styles.text}>Karteikarte erstellen</Text>
+                    <TextInput style={styles.input} placeholder="Frage eingeben" multiline={false}
                         underlineColorAndroid="transparent" onChangeText={(value) => this._inputChanged(value)}>
                     </TextInput>
-                    <TextInput style={styles.input} placeholder="Enter answer" multiline={false}
+                    <TextInput style={styles.input} placeholder="Antwort eingeben" multiline={false}
                         underlineColorAndroid="transparent" onChangeText={(value) => this.setState({ answer: value })}>
                     </TextInput>
                     <View>
                         <TouchableOpacity disabled={saveDisabled} style={[styles.button, saveBtnStyle.color]} onPress={() => this.onSavePressed(question, answer, fileDownloadUrl)}>
-                            <Text style={styles.buttonText}>Save</Text>
+                            <Text style={styles.buttonText}>Speichern</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.button]} onPress={() => this._takePicture()}>
-                            <Text style={styles.buttonText}>Take Picture</Text>
+                            <Text style={styles.buttonText}>Bild hinzufügen</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.button} onPress={() => this.onCancelPressed()}>
-                            <Text style={styles.buttonText}>Cancel</Text>
+                            <Text style={styles.buttonText}>Abbrechen</Text>
                         </TouchableOpacity>
                     </View>
                 </KeyboardAvoidingView>

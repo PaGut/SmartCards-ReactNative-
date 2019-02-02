@@ -64,7 +64,6 @@ export default class CardDetailScreen extends Component {
                 'Bei der Karteikartenanlage wurde kein Bild verknüpft.',
                 [{ text: 'OK' }]);
         }
-
     }
 
     // set view mode edit/display
@@ -262,7 +261,7 @@ export default class CardDetailScreen extends Component {
             cardValue = answer;
         }
 
-
+        debugger;
         if (editMode === false) {
             content =
                 <CardFlip onFlip={() => this._afterCardFlipped()} visible={false} style={styles.cardContainer} ref={(card) => this.card = card} >
@@ -272,10 +271,10 @@ export default class CardDetailScreen extends Component {
         } else {
             content =
                 <View>
-                    <TextInput value={question} style={styles.input} placeholder="Enter question" multiline={true} blurOnSubmit={true}
+                    <TextInput value={question} style={styles.input} placeholder="Frage eingeben" multiline={true} blurOnSubmit={true}
                         underlineColorAndroid="transparent" onChangeText={(value) => this.setState({ question: value })}>
                     </TextInput>
-                    <TextInput value={answer} style={styles.input} placeholder="Enter answer" multiline={true} blurOnSubmit={true}
+                    <TextInput value={answer} style={styles.input} placeholder="Antwort eingeben" multiline={true} blurOnSubmit={true}
                         underlineColorAndroid="transparent" onChangeText={(value) => this.setState({ answer: value })}>
                     </TextInput>
                 </View>
@@ -287,7 +286,7 @@ export default class CardDetailScreen extends Component {
                 source: {
                     uri: fileDownloadUrl,
                 },
-                title: 'Image',
+                title: 'Bild',
                 width: 450,
                 height: 450,
             },

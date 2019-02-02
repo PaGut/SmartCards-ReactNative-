@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, ActivityIndicator, Button, Dimensions, View, FlatList, ScrollView, StyleSheet, Text } from 'react-native';
+import { Alert, ActivityIndicator, View, FlatList, ScrollView, StyleSheet, Text } from 'react-native';
 // import custom components
 import CardDeckItem from '../components/CardDeckItem'
 import NewCardDeck from '../components/NewCardDeck'
@@ -45,8 +45,8 @@ export default class CardDeckScreen extends Component {
             // save quote within sql lite database
             this._saveCardDeckToDB(name, desc, examDate, CardDecks);
         } else {
-            Alert.alert('CardDeck name is empty',
-                'Please enter a CardDeck name',
+            Alert.alert('Name nicht befüllt',
+                'Bitte geben Sie einen Namen ein.',
                 [{ text: 'OK', style: 'cancel' }]);
         }
         this.setState({ CardDecks, showCreateCardDeckScreen: false });
@@ -63,7 +63,7 @@ export default class CardDeckScreen extends Component {
             // set new generated id to array entry
             CardDecks[CardDecks.length - 1].id = docRef.id;
         } catch (error) {
-            alert('No internet connection');
+            alert('Keine Internetverbindung, Service-Aufruf fehlgeschlagen');
         }
         this.setState({ CardDecks });
     }
@@ -92,7 +92,6 @@ export default class CardDeckScreen extends Component {
                 desc: CardDeck.data().desc,
                 examDate: CardDeck.data().examDate,
                 subjectData: subject
-
             });
         });
         // neuen state setzen und loading indicator false setzen
@@ -113,7 +112,7 @@ export default class CardDeckScreen extends Component {
 
             //subjects[subjects.length - 1].id = docRef.id;
         } catch (error) {
-            alert('CardDeck does not exist');
+            alert('CardDeck existiert nicht.');
         }
     }
 
@@ -145,7 +144,7 @@ export default class CardDeckScreen extends Component {
                         data={this.state.CardDecks}
                         keyExtractor={item => item.id}
                         ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
-                        ListEmptyComponent={() => (<Text style={styles.listEmpty}>No Card Deck exists</Text>)}
+                        ListEmptyComponent={() => (<Text style={styles.listEmpty}>Bitte erstellen Sie Ihr erstes Deck</Text>)}
                         refreshing={this.state.isLoading}
                         onRefresh={this._refresh}
                         renderItem={({ item, index }) => (

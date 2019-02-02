@@ -107,7 +107,7 @@ export default class SignIn extends Component {
                             </View>
                             <View style={styles.infoContainer}>
                                 <TextInput style={styles.input}
-                                    placeholder="Enter email"
+                                    placeholder="Email eingeben"
                                     placeholderColor='lightsalmon'
                                     keyboardType='email-address'
                                     returnyKeyType='next'
@@ -116,7 +116,7 @@ export default class SignIn extends Component {
                                     onSubmitEditing={() => this.refs.confirmEmail.focus()}
                                     onChangeText={(value) => this.setState({ email: value })} />
                                 <TextInput style={[styles.input, { marginTop: 10 }]}
-                                    placeholder="Confirm email"
+                                    placeholder="Email bestätigen"
                                     placeholderColor='lightsalmon'
                                     keyboardType='email-address'
                                     returnyKeyType='next'
@@ -125,7 +125,7 @@ export default class SignIn extends Component {
                                     onSubmitEditing={() => this.refs.username.focus()}
                                     onChangeText={(value) => this.setState({ confirmEmail: value })} />
                                 <TextInput style={[styles.input, { marginTop: 10 }]}
-                                    placeholder="Enter username"
+                                    placeholder="Benutzername eingeben"
                                     placeholderColor='lightsalmon'
                                     returnyKeyType='next'
                                     autoCorrect={false}
@@ -133,7 +133,7 @@ export default class SignIn extends Component {
                                     onSubmitEditing={() => this.refs.password.focus()}
                                     onChangeText={(value) => this.setState({ username: value })} />
                                 <TextInput style={[styles.input, { marginTop: 10 }]}
-                                    placeholder="Enter password"
+                                    placeholder="Passwort eingeben"
                                     placeholderColor='lightsalmon'
                                     returnyKeyType='next'
                                     secureTextEntry={true}
@@ -141,14 +141,14 @@ export default class SignIn extends Component {
                                     onSubmitEditing={() => this.refs.confirmPassword.focus()}
                                     onChangeText={(value) => this.setState({ password: value })} />
                                 <TextInput style={[styles.input, { marginTop: 10 }]}
-                                    placeholder='Confirm password'
+                                    placeholder='Passwort bestätigen'
                                     placeholderColor='lightsalmon'
                                     returnyKeyType='go'
                                     secureTextEntry={true}
                                     ref={"confirmPassword"}
                                     onChangeText={(value) => this.setState({ confirmPassword: value })} />
                                 <TouchableOpacity style={styles.buttonContainer} onPress={() => this._handleRegister()}>
-                                    <Text style={styles.buttonText}>SIGN IN</Text>
+                                    <Text style={styles.buttonText}>Registrieren</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         textAlign: 'center',
-        color: 'black',
+        color: 'white',
         fontWeight: 'bold'
     }
 });

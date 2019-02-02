@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Badge, Text } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { BarChart, XAxis } from 'react-native-svg-charts';
 import * as scale from 'd3-scale';
 
@@ -8,14 +8,13 @@ export default class LearnResultScreen extends Component {
     state = { averageRating: 0, ratings: [] };
     // Called before the view is loaded
     componentWillMount() {
-
         //determine Ratingdata and write it into state
         this._determineResult();
     }
 
     render() {
         const ratings = this.state.ratings;
-        const xAxisData = ["Terrible", "Bad", "OK", "Good", "Perfect"];
+        const xAxisData = ["Schrecklich", "Schlecht", "OK", "Gut", "Perfekt"];
         const color = ["red", "orangered", "orange", "gold", "lightgreen"]
         let counter = 0;
         let data = [];
@@ -33,7 +32,7 @@ export default class LearnResultScreen extends Component {
             <View style={styles.container}>
                 <View style={styles.result}>
                     {/* The array begins at 0 so the entry in xAxisData with the id averageRating - 1 is relevant  */}
-                    <Text style={styles.resultText}>Your overall Learning Result is: {xAxisData[this.state.averageRating - 1]}</Text>
+                    <Text style={styles.resultText}>Dein Gesamtlernergebnis ist: {xAxisData[this.state.averageRating - 1]}</Text>
                 </View>
 
                 <BarChart
