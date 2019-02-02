@@ -36,7 +36,6 @@ export default class CardScreen extends Component {
         this._retrieveCards();
         // add focus event, called every time the site is focused for navigation
         this.props.navigation.addListener('willFocus', () => {
-            debugger;
             this._refresh();
         });
     }

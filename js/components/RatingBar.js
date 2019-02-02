@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+// import text to speech
+import { Speech } from 'expo';
+// import icons
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 export default class RatingBar extends Component {
@@ -25,9 +30,21 @@ export default class RatingBar extends Component {
     }
 
     _finishRating = () => {
+
         this.props.onFinishRating(this.state.filledStars);
         // reset the Stars after rating was done
         this.setState({ filledStars: 0 });
+    }
+
+    _startTextToSpeech = () => {
+        debugger;
+        let { cardValue } = this.props;
+        // create parameters for speach to test
+        var oMap = {
+            language: 'de-DE',
+        }
+        // execute text to speech
+        Speech.speak(cardValue, oMap);
     }
 
     render() {
@@ -58,16 +75,16 @@ export default class RatingBar extends Component {
         }
         return (
             <View style={styles.container}>
-                <View style={styles.rating}>{ratingBar}</View>
-                <Text style={styles.textStyle}>
-                    {label[filledStars - 1]}
-                </Text>
-                <TouchableOpacity
-                    activeOpacity={0.7}
-                    style={styles.button}
-                    onPress={this._finishRating}>
-                    <Text style={styles.textStyleButton}>Next Card</Text>
-                </TouchableOpacity>
+                <MaterialCommunityIcons.Button name="voice" color="lightsalmon" size="50" iconStyle={{ marginRight: 0 }} backgroundColor="transparent" onPress={() => this._startTextToSpeech()}>
+                </MaterialCommunityIcons.Button>
+                <View style={styles.ratingContainer}>
+                    <View style={styles.rating}>{ratingBar}</View>
+                    <Text style={styles.textStyle}>
+                        {label[filledStars - 1]}
+                    </Text>
+                </View>
+                <Icon.Button name="navigate-next" color="lightsalmon" size="50" iconStyle={{ marginRight: 0 }} backgroundColor="transparent" onPress={this._finishRating}>
+                </Icon.Button>
             </View>
         );
     }
@@ -76,13 +93,23 @@ export default class RatingBar extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: 'column',
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+    },
+    horizontalContainer: {
+        flex: 1,
+        flexDirection: 'row',
         justifyContent: 'space-evenly',
         alignItems: 'center',
     },
     rating: {
         justifyContent: 'center',
         flexDirection: 'row',
+    },
+    ratingContainer: {
+        justifyContent: 'center',
+        flexDirection: 'column',
     },
     button: {
         backgroundColor: "lightsalmon",

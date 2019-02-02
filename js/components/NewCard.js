@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Button, Text, TouchableOpacity, View, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
 import { Camera, Permissions } from 'expo';
+
 // import custom components
-import CameraScreen from '../camera/CameraScreen'
+import CameraScreen from '../camera/CameraScreen';
 
 export default class NewCard extends Component {
 
@@ -58,7 +59,7 @@ export default class NewCard extends Component {
                             <Text style={styles.buttonText}>Save</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.button]} onPress={() => this.setState({ showCameraScreen: true })}>
-                            <Text style={styles.buttonText}>photo icon</Text>
+                            <Text style={styles.buttonText}>Take Picture</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.button} onPress={() => this.onCancelPressed()}>
                             <Text style={styles.buttonText}>Cancel</Text>

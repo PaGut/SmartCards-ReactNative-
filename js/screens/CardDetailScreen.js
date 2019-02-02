@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import { KeyboardAvoidingView, TextInput, TouchableOpacity, Button, View, StyleSheet, Text } from 'react-native';
 import CardFlip from 'react-native-card-flip';
+import Toast, { DURATION } from 'react-native-easy-toast'
 // Navigation-Buttons for Edit/View Mode
 import CardButtons from '../components/CardButtons';
 // Rating-Bar for Learn Mode
 import RatingBar from '../components/RatingBar';
 // import database
 import Firebase from '../Firebase';
+// import icons
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default class CardDetailScreen extends Component {
 
@@ -15,7 +18,8 @@ export default class CardDetailScreen extends Component {
         question: null, answer: null,
         currentCount: null, maxCount: null,
         editMode: false, learnActive: false,
-        ratings: []
+        ratings: [],
+        questionActive: true
     };
 
     // define card header at runtime
@@ -31,18 +35,12 @@ export default class CardDetailScreen extends Component {
             buttonTitle = "View";
         }
 
-
         if (navigation.getParam('learnActive') !== true) {
-
             return {
-
                 title: title,
                 headerRight: (
-                    <Button
-                        onPress={navigation.getParam('setEditMode')}
-                        title={buttonTitle}
-                        color="lightsalmon"
-                    />
+                    <Icon.Button iconStyle={{ marginRight: 0 }} name="edit" color="lightsalmon" size="30" backgroundColor="transparent" onPress={navigation.getParam('setEditMode')}>
+                    </Icon.Button>
                 )
             };
         }
@@ -163,10 +161,14 @@ export default class CardDetailScreen extends Component {
     //after a Card was rated
     _onFinishRating = (rating) => {
         let ratings = this.state.ratings;
-        ratings.push(rating);
-
-        this.setState({ ratings: ratings }, () => this._nextCard());
-
+        // check if rating is set        
+        if (rating === 0) {
+            this.refs.toast.show('Please evaluate the card before navigate');
+            return;
+        } else {
+            ratings.push(rating);
+            this.setState({ ratings: ratings }, () => this._nextCard());
+        }
     }
 
     _saveChangesInEditMode = async () => {
@@ -193,6 +195,17 @@ export default class CardDetailScreen extends Component {
         }
     }
 
+    _afterCardFlipped(oEvent) {
+        debugger;
+        let { questionActive } = this.state;
+        if (questionActive) {
+            this.setState({ questionActive: false });
+        } else {
+            this.setState({ questionActive: true });
+        }
+
+    }
+
     /* called after view is called */
     componentDidMount() {
         // init firebase object        
@@ -215,16 +228,23 @@ export default class CardDetailScreen extends Component {
 
     render() {
 
-        let { question, answer, currentCount, maxCount, learnActive, editMode } = this.state;
+        let { question, answer, currentCount, maxCount, learnActive, editMode, questionActive } = this.state;
 
         let content;
+        // check if answer or question is active
+        var cardValue;
+        if (questionActive) {
+            cardValue = question;
+        } else {
+            cardValue = answer;
+        }
 
         if (editMode === false) {
             content =
-                <CardFlip visible={false} style={styles.cardContainer} ref={(card) => this.card = card} >
+                <CardFlip onFlip={() => this._afterCardFlipped()} visible={false} style={styles.cardContainer} ref={(card) => this.card = card} >
                     <TouchableOpacity activeOpacity={1} style={[styles.card, styles.card1]} onPress={() => this.card.flip()} ><Text style={styles.label}>{question}</Text></TouchableOpacity>
                     <TouchableOpacity activeOpacity={1} style={[styles.card, styles.card2]} onPress={() => this.card.flip()} ><Text style={styles.label}>{answer}</Text></TouchableOpacity>
-                </CardFlip>
+                </CardFlip >
         } else {
             content =
                 <View>
@@ -247,8 +267,12 @@ export default class CardDetailScreen extends Component {
                 <CardButtons hide={learnActive} previous={this._previousCard} next={this._nextCard} />
 
                 {/* Show Rating bar with active learning */}
-                <RatingBar visible={learnActive} onFinishRating={this._onFinishRating} defaultRating={1} maxRating={5} />
-
+                <RatingBar visible={learnActive} cardValue={cardValue} onFinishRating={this._onFinishRating} defaultRating={1} maxRating={5} />
+                {/* set toast object to show when neccessary*/}
+                <Toast ref="toast"
+                    position='center'
+                    style={{ backgroundColor: 'red' }}
+                    textStyle={{ color: 'black' }} />
             </KeyboardAvoidingView>
         );
     }
