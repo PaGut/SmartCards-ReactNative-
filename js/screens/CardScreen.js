@@ -57,7 +57,8 @@ export default class CardScreen extends Component {
                 id: card.id,
                 question: card.data().question,
                 answer: card.data().answer,
-                cardData: CardDeck
+                fileDownloadUrl: card.data().fileDownloadUrl,
+                cardData: CardDeck,
             });
         });
         // neuen state setzen und loading indicator false setzen
@@ -68,15 +69,15 @@ export default class CardScreen extends Component {
         this.setState({ showCreateCardScreen: true });
     }
 
-    _addCard = (question, answer) => {
+    _addCard = (question, answer, fileDownloadUrl) => {
         let { cards } = this.state;
 
         // check if card question is empty
         if (question) {
             // set card list data
-            cards.push({ question: question, answer: answer });
+            cards.push({ question: question, answer: answer, fileDownloadUrl: fileDownloadUrl });
             // save card to database
-            this._saveCardToDB(question, answer, cards);
+            this._saveCardToDB(question, answer, fileDownloadUrl, cards);
         } else {
             Alert.alert('Card question is empty',
                 'Please enter a Card question',
@@ -88,14 +89,14 @@ export default class CardScreen extends Component {
         this.setState({ showCreateCardScreen: false });
     }
 
-    _saveCardToDB = async (question, answer, cards) => {
+    _saveCardToDB = async (question, answer, fileDownloadUrl, cards) => {
         let { CardDeck } = this.state;
         let email = CardDeck.subjectData.userData.email;
         let subjectName = CardDeck.subjectData.name;
 
         try {
             //save data to database collection card
-            docRef = await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('CardDecks').doc(CardDeck.id).collection('cards').add({ question, answer });
+            docRef = await Firebase.db.collection('user').doc(email).collection('subjects').doc(subjectName).collection('CardDecks').doc(CardDeck.id).collection('cards').add({ question, answer, fileDownloadUrl });
             // set new generated id to array entry
             cards[cards.length - 1].id = docRef.id;
             // refresh list
@@ -131,6 +132,12 @@ export default class CardScreen extends Component {
         this._retrieveCards();
     }
 
+    _startLearning = () => {
+        this.props.navigation.navigate('CardDetailScreen', {
+            card: this.state.cards[0], learnActive: true
+        });
+    }
+
     render() {
 
         if (this.state.isLoading) {
@@ -144,12 +151,6 @@ export default class CardScreen extends Component {
 
         return (
             <View style={styles.container} >
-                <TouchableOpacity style={styles.button} onPress={() => this.props.navigation.navigate('CardDetailScreen', {
-                    card: this.state.cards[0], learnActive: true
-                }
-                )}>
-                    <Text style={styles.buttonText}>Start learning</Text>
-                </TouchableOpacity>
                 <FlatList
                     data={this.state.cards}
                     keyExtractor={item => item.id}
@@ -159,13 +160,13 @@ export default class CardScreen extends Component {
                     onRefresh={this._refresh}
                     renderItem={({ item, index }) => (
                         // render CardDeckItems
-                        <Card card={item} index={index} onDelete={this._deleteCard} onPress={() => this.props.navigation.navigate('CardDetailScreen', {
+                        <Card card={item} index={index} onDelete={this._deleteCard} onStartLearning={this._startLearning} onPress={() => this.props.navigation.navigate('CardDetailScreen', {
                             card: item, learnActive: false
                         })} />
                     )}
                 >
                 </FlatList>
-                <NewCard visible={this.state.showCreateCardScreen} onSave={this._addCard} onCancel={this._closeCreateCardScreen} />
+                <NewCard visible={this.state.showCreateCardScreen} cardDeck={CardDeck} onSave={this._addCard} onCancel={this._closeCreateCardScreen} />
             </View>
         );
     }

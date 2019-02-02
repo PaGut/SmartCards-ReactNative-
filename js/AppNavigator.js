@@ -49,14 +49,14 @@ export const AuthStack = createStackNavigator({
     SignIn: {
         screen: SignIn,
         navigationOptions: {
-            title: "Sign In",
+            title: "Login",
             headerStyle
         }
     },
     SignUp: {
         screen: SignUp,
         navigationOptions: {
-            title: "Sign Up",
+            title: "Registrieren",
             headerStyle
         }
     }
@@ -74,7 +74,7 @@ export const AppStack = createBottomTabNavigator({
     Settings: {
         screen: Profile,
         navigationOptions: {
-            title: 'Profile',
+            title: 'Profil',
             tabBarIcon: ({ tintColor }) => (<Icon.Feather name="settings" size={24} color={tintColor} />)
         }
     }
@@ -91,10 +91,8 @@ export const AppStack = createBottomTabNavigator({
 // set active navigations stack
 export default createAppContainer(createSwitchNavigator(
     {
-        //AuthLoading: AuthLoadingScreen,
         App: AppStack,
         Auth: AuthStack,
-
     },
     {
         initialRouteName: 'Auth',

@@ -1,14 +1,15 @@
 import React, { Component } from "react";
-import { View } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Card, Button, Text } from "react-native-elements";
 
 
 export default class Profile extends Component {
 
     render() {
+
         return (
             <View style={{ paddingVertical: 20 }}>
-                <Card title="John Doe">
+                <Card title="Patrick Gutting">
                     <View
                         style={{
                             backgroundColor: "#bcbec1",
@@ -23,14 +24,22 @@ export default class Profile extends Component {
                     >
                         <Text style={{ color: "white", fontSize: 28 }}>PG</Text>
                     </View>
-                    <Button
-                        backgroundColor="#03A9F4"
-                        title="SIGN OUT"
-                        onPress={() => this.props.navigation.navigate('SignIn'
-                        )}
-                    />
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate('SignIn')}>
+                        <Text style={styles.buttonText}>SIGN OUT</Text>
+                    </TouchableOpacity>
                 </Card>
             </View>
         )
     }
 }
+
+const styles = StyleSheet.create({
+    buttonText: {
+        textAlign: 'center',
+        color: 'white',
+        fontWeight: 'bold',
+        backgroundColor: 'lightsalmon',
+        height: 40,
+        paddingTop: 10
+    }
+});

@@ -13,7 +13,7 @@ export default class SignIn extends Component {
     // set header toolbar title
     static navigationOptions = ({ navigation }) => {
         return {
-            title: "SignIn",
+            title: "Login",
             headerLeft: null,
             tabBarVisible: false
         }
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         textAlign: 'center',
-        color: 'black',
+        color: 'white',
         fontWeight: 'bold'
     }
 });

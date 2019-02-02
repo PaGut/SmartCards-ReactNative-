@@ -7,7 +7,7 @@ var config = {
     authDomain: "smartcards-d6a0d.firebaseapp.com",
     databaseURL: "https://smartcards-d6a0d.firebaseio.com",
     projectId: "smartcards-d6a0d",
-    storageBucket: "",
+    storageBucket: "smartcards-d6a0d.appspot.com",
     messagingSenderId: "211245242528"
 };
 
@@ -22,6 +22,8 @@ export default class Firebase {
         Firebase.db = firebase.firestore();
         const settings = { timestampsInSnapshots: true };
         Firebase.db.settings(settings);
-    }
 
+        // Get a reference to the storage service, which is used to create references in your storage bucket
+        Firebase.storage = firebase.storage();
+    }
 }

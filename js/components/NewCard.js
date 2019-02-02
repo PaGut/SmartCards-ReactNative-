@@ -1,19 +1,18 @@
 import React, { Component } from 'react';
-import { StyleSheet, Button, Text, TouchableOpacity, View, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
-import { Camera, Permissions } from 'expo';
-
-// import custom components
-import CameraScreen from '../camera/CameraScreen';
+import { StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
+import { ImagePicker } from 'expo';
+// import database
+import Firebase from '../Firebase';
 
 export default class NewCard extends Component {
 
-    state = { question: null, answer: null, saveDisabled: true, hasCameraPermission: null, showCameraScreen: false };
+    state = { question: null, answer: null, fileDownloadUrl: null, saveDisabled: true };
 
-    onSavePressed = (question, answer) => {
+    onSavePressed = (question, answer, fileDownloadUrl) => {
         //call save property
-        this.props.onSave(question, answer);
+        this.props.onSave(question, answer, fileDownloadUrl);
         //reset values for Card
-        this.setState({ question: null, answer: null });
+        this.setState({ question: null, answer: null, fileDownloadUrl: null });
     }
 
     onCancelPressed = () => {
@@ -21,18 +20,69 @@ export default class NewCard extends Component {
         this.setState({ question: null, answer: null, saveDisabled: true });
     }
 
-    _closeCameraScreen = () => {
-        this.setState({ showCameraScreen: false });
+    _inputChanged = (value) => {
+        //change the state
+        this.setState({ question: value });
+
+        //disable/enable savebutton
+        if (value == "") {
+            this.setState({ saveDisabled: true });
+        }
+        else {
+            this.setState({ saveDisabled: false });
+        }
     }
 
-    async componentDidMount() {
-        const { status } = await Permissions.askAsync(Permissions.CAMERA);
-        this.setState({ hasCameraPermission: status === 'granted' });
+    _takePicture = async () => {
+        let result = await ImagePicker.launchCameraAsync({
+            base64: true,
+            quality: 1,
+            allowsEditing: true,
+            aspect: [4, 3],
+        });
+        // upload file to firebase storage as base64
+        this._uploadFile(result)
+    };
+
+    _uploadFile = async (result) => {
+
+        var ref = Firebase.storage.ref().child("images/images.jpg");
+        var uploadTask = ref.putString(result.base64, "base64");
+        //var uploadTask = ref.put(blob, metadata);
+
+        uploadTask.on('state_changed', function (snapshot) {
+            // Observe state change events such as progress, pause, and resume
+            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
+            switch (snapshot.state) {
+                case Firebase.storage.TaskState.PAUSED: // or 'paused'
+                    console.log('Upload is paused');
+                    break;
+                case Firebase.storage.TaskState.RUNNING: // or 'running'
+                    console.log('Upload is running');
+                    break;
+            }
+        }, function (error) {
+            // Handle unsuccessful uploads
+        }, function () {
+            // Handle successful uploads on complete            
+            uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+                console.log('File available at', downloadURL);
+                // set download to url
+                this.setState({ fileDownloadUrl: downloadURL });
+            }.bind(this));
+        }.bind(this));
+    }
+
+    async componentWillMount() {
+        // init firebase object        
+        Firebase.init();
     }
 
     render() {
         const { visible, onSave } = this.props;
-        const { question, answer, saveDisabled, hasCameraPermission, showCameraScreen } = this.state;
+        const { question, answer, fileDownloadUrl, saveDisabled } = this.state;
 
         // set dynamic color of save button for disabled
         var saveBtnStyle = StyleSheet.create({
@@ -55,36 +105,22 @@ export default class NewCard extends Component {
                         underlineColorAndroid="transparent" onChangeText={(value) => this.setState({ answer: value })}>
                     </TextInput>
                     <View>
-                        <TouchableOpacity disabled={saveDisabled} style={[styles.button, saveBtnStyle.color]} onPress={() => this.onSavePressed(question, answer)}>
+                        <TouchableOpacity disabled={saveDisabled} style={[styles.button, saveBtnStyle.color]} onPress={() => this.onSavePressed(question, answer, fileDownloadUrl)}>
                             <Text style={styles.buttonText}>Save</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.button]} onPress={() => this.setState({ showCameraScreen: true })}>
+                        <TouchableOpacity style={[styles.button]} onPress={() => this._takePicture()}>
                             <Text style={styles.buttonText}>Take Picture</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.button} onPress={() => this.onCancelPressed()}>
                             <Text style={styles.buttonText}>Cancel</Text>
                         </TouchableOpacity>
-                        <CameraScreen visible={showCameraScreen} onClose={this._closeCameraScreen} />
                     </View>
                 </KeyboardAvoidingView>
             </Modal>
         );
     }
-
-    _inputChanged = (value) => {
-        //change the state
-        this.setState({ question: value });
-
-        //disable/enable savebutton
-        if (value == "") {
-            this.setState({ saveDisabled: true });
-        }
-        else {
-            this.setState({ saveDisabled: false });
-        }
-
-    }
 }
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,

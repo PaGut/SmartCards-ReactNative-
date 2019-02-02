@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { KeyboardAvoidingView, TextInput, TouchableOpacity, Button, View, StyleSheet, Text } from 'react-native';
+import { Alert, KeyboardAvoidingView, TextInput, TouchableOpacity, View, StyleSheet, Text } from 'react-native';
 import CardFlip from 'react-native-card-flip';
-import Toast, { DURATION } from 'react-native-easy-toast'
+import Toast, { DURATION } from 'react-native-easy-toast';
+import ImageView from 'react-native-image-view';
 // Navigation-Buttons for Edit/View Mode
 import CardButtons from '../components/CardButtons';
 // Rating-Bar for Learn Mode
@@ -19,7 +20,9 @@ export default class CardDetailScreen extends Component {
         currentCount: null, maxCount: null,
         editMode: false, learnActive: false,
         ratings: [],
-        questionActive: true
+        questionActive: true,
+        fileDownloadUrl: null,
+        showImage: false
     };
 
     // define card header at runtime
@@ -30,21 +33,39 @@ export default class CardDetailScreen extends Component {
             title = "";
         }
 
-        var buttonTitle = navigation.getParam('modeButtonTitle');
-        if (buttonTitle === undefined) {
-            buttonTitle = "View";
-        }
-
+        // create toolbar button
         if (navigation.getParam('learnActive') !== true) {
             return {
                 title: title,
                 headerRight: (
                     <Icon.Button iconStyle={{ marginRight: 0 }} name="edit" color="lightsalmon" size="30" backgroundColor="transparent" onPress={navigation.getParam('setEditMode')}>
                     </Icon.Button>
-                )
+                ),
+
             };
         }
     };
+
+    // open or close assigned image
+    _openImage = () => {
+
+        let { showImage, activeCard } = this.state;
+        // check if image should be shown or not
+        let show;
+        if (activeCard.fileDownloadUrl !== undefined) {
+            if (showImage) {
+                show = false;
+            } else {
+                show = true;
+            }
+            this.setState({ showImage: show, fileDownloadUrl: activeCard.fileDownloadUrl });
+        } else {
+            Alert.alert('Kein Bild vorhanden',
+                'Bei der Karteikartenanlage wurde kein Bild verknüpft.',
+                [{ text: 'OK' }]);
+        }
+
+    }
 
     // set view mode edit/display
     _setEditMode = () => {
@@ -137,6 +158,7 @@ export default class CardDetailScreen extends Component {
                 id: card.id,
                 question: card.data().question,
                 answer: card.data().answer,
+                fileDownloadUrl: card.data().fileDownloadUrl
             });
         });
 
@@ -213,6 +235,7 @@ export default class CardDetailScreen extends Component {
 
         // set function to static navigation option parameter
         this.props.navigation.setParams({ setEditMode: this._setEditMode });
+        this.props.navigation.setParams({ openImage: this._openImage });
 
         // set learn mode
         this.setState({ learnActive: this.props.navigation.getParam('learnActive') });
@@ -228,7 +251,7 @@ export default class CardDetailScreen extends Component {
 
     render() {
 
-        let { question, answer, currentCount, maxCount, learnActive, editMode, questionActive } = this.state;
+        let { question, answer, currentCount, maxCount, learnActive, editMode, questionActive, showImage, fileDownloadUrl } = this.state;
 
         let content;
         // check if answer or question is active
@@ -239,12 +262,13 @@ export default class CardDetailScreen extends Component {
             cardValue = answer;
         }
 
+
         if (editMode === false) {
             content =
                 <CardFlip onFlip={() => this._afterCardFlipped()} visible={false} style={styles.cardContainer} ref={(card) => this.card = card} >
                     <TouchableOpacity activeOpacity={1} style={[styles.card, styles.card1]} onPress={() => this.card.flip()} ><Text style={styles.label}>{question}</Text></TouchableOpacity>
                     <TouchableOpacity activeOpacity={1} style={[styles.card, styles.card2]} onPress={() => this.card.flip()} ><Text style={styles.label}>{answer}</Text></TouchableOpacity>
-                </CardFlip >
+                </CardFlip>
         } else {
             content =
                 <View>
@@ -257,14 +281,32 @@ export default class CardDetailScreen extends Component {
                 </View>
         }
 
+        // set image  
+        var images = [
+            {
+                source: {
+                    uri: fileDownloadUrl,
+                },
+                title: 'Image',
+                width: 450,
+                height: 450,
+            },
+        ];
+
         return (
             <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
                 <Text style={styles.counter}>{currentCount}/{maxCount}</Text>
                 {/* set content depending on edit mode */}
                 {content}
+                <ImageView
+                    images={images}
+                    imageIndex={0}
+                    isVisible={showImage}
+                    onClose={() => this._openImage()}
+                />
 
                 {/* Do not show CardButtons if Learning is active */}
-                <CardButtons hide={learnActive} previous={this._previousCard} next={this._nextCard} />
+                <CardButtons hide={learnActive} openImage={this._openImage} previous={this._previousCard} next={this._nextCard} />
 
                 {/* Show Rating bar with active learning */}
                 <RatingBar visible={learnActive} cardValue={cardValue} onFinishRating={this._onFinishRating} defaultRating={1} maxRating={5} />

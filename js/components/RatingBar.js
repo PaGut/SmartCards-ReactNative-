@@ -17,10 +17,8 @@ export default class RatingBar extends Component {
 
     constructor() {
         super();
-
         //Filled star
         this.star = '../../assets/star_filled.png';
-
         //Empty star
         this.starEmpty = '../../assets/star_empty.png';
     }
@@ -30,7 +28,6 @@ export default class RatingBar extends Component {
     }
 
     _finishRating = () => {
-
         this.props.onFinishRating(this.state.filledStars);
         // reset the Stars after rating was done
         this.setState({ filledStars: 0 });
@@ -41,7 +38,7 @@ export default class RatingBar extends Component {
         let { cardValue } = this.props;
         // create parameters for speach to test
         var oMap = {
-            language: 'de-DE',
+            language: 'en-US',
         }
         // execute text to speech
         Speech.speak(cardValue, oMap);

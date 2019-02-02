@@ -45,7 +45,13 @@ export default class Card extends Component {
                 }
             ],
             rowId: this.props.index,
-            sectionId: 1
+            sectionId: 1,
+            left: [{
+                onPress: () => {
+                    this.props.onStartLearning();
+                },
+                text: 'Learn', type: 'primary'
+            }]
         };
 
         // cut shown text after position 20 and add "..."

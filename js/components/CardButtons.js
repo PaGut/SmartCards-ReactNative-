@@ -15,12 +15,12 @@ export default class CardButtons extends Component {
             //Learn mode is not active, show the buttons ->return buttons
             return (
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button} onPress={() => this.props.previous()}>
-                        <Icon name="arrow-back" color="white" size={50} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => this.props.next()}>
-                        <Icon name="arrow-forward" color="white" size={50} />
-                    </TouchableOpacity>
+                    <Icon.Button name="navigate-before" color="lightsalmon" size="50" iconStyle={{ marginRight: 0 }} backgroundColor="transparent" onPress={() => this.props.previous()}>
+                    </Icon.Button>
+                    <Icon.Button iconStyle={{ marginRight: 10, marginLeft: 10 }} name="photo" color="lightsalmon" size="50" backgroundColor="transparent" onPress={() => this.props.openImage()}>
+                    </Icon.Button>
+                    <Icon.Button name="navigate-next" color="lightsalmon" size="50" iconStyle={{ marginRight: 0 }} backgroundColor="transparent" onPress={() => this.props.next()}>
+                    </Icon.Button>
                 </View>
             )
         }
