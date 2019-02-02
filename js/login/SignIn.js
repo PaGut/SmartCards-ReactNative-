@@ -4,7 +4,7 @@ import {
     SafeAreaView, Text, Button, KeyboardAvoidingView,
     StatusBar, TouchableWithoutFeedback, TouchableOpacity
 } from "react-native";
-
+import ResponsiveImage from '../components/ResponsiveImage';
 // import database
 import Firebase from '../Firebase';
 
@@ -77,7 +77,8 @@ export default class SignIn extends Component {
                     <TouchableWithoutFeedback style={styles.container} onPress={Keyboard.dismiss}>
                         <View style={styles.container}>
                             <View style={styles.logoContainer}>
-                                <Image style={styles.log} source={require('../../assets/login_logo.jpg')} />
+                                <ResponsiveImage source={require('../../assets/StartLogo.png')} width={230} height={130} />
+                                {/* <Image style={styles.logo} source={require('../../assets/StartLogo.png')} /> */}
                             </View>
                             <View style={styles.infoContainer}>
                                 <TextInput style={styles.input}
@@ -125,13 +126,11 @@ const styles = StyleSheet.create({
         flexDirection: 'column'
     },
     logoContainer: {
-        alignItems: 'center',
         justifyContent: 'flex-start',
-        flex: 1
+        flex: 1,
     },
     logo: {
-        width: 128,
-        height: 56
+        resizeMode: 'center',
     },
     title: {
         color: 'red',
