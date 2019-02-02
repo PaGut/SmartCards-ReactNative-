@@ -16,6 +16,18 @@ export default class LearnResultScreen extends Component {
     render() {
         const ratings = this.state.ratings;
         const xAxisData = ["Terrible", "Bad", "OK", "Good", "Perfect"];
+        const color = ["red", "orangered", "orange", "gold", "lightgreen"]
+        let counter = 0;
+        let data = [];
+
+        //the rating array is sorted from terrible to perfect
+        ratings.forEach(element => {
+            data.push({
+                value: element,
+                svg: { fill: color[counter] }
+            })
+            counter++;
+        });
         debugger;
         return (
             <View style={styles.container}>
@@ -26,11 +38,12 @@ export default class LearnResultScreen extends Component {
 
                 <BarChart
                     style={styles.barChart}
-                    data={ratings}
-                    // svg={{ fill: 'lightsalmon'} }
+                    data={data}
+                    // svg={{ fill: 'lightsalmon' }}
                     yAccessor={({ item }) => item.value}
                     contentInset={{ top: 10, bottom: 10 }}
                     xScale={scale.scaleBand}
+                    gridMin={0}
                 />
 
                 <XAxis
@@ -55,21 +68,11 @@ export default class LearnResultScreen extends Component {
     }
     _determineResult = () => {
         let ratings = this.props.navigation.getParam('ratings');
-        let result = { value: 0, svg: { fill: 'red' } };
-        let ratingResult = [result];//count every category from the raiting
+        let ratingResult = [0, 0, 0, 0, 0];//count every category from the raiting
         let averageRating = this.state.averageRating;
-        debugger;
+
         ratings.forEach(element => {
-            if (ratingResult[element - 1] !== undefined) {
-                result = ratingResult[element - 1];
-                result.value = result.value + 1;
-                ratingResult[element - 1] = result;
-            }
-            else {
-                ratingResult[element - 1] = result;
-            }
-            // ratingResult[element - 1].value = ratingResult[element - 1].value + 1;
-            // ratingResult[element - 1].svg = { fill: 'red' };
+            ratingResult[element - 1] = ratingResult[element - 1] + 1;
             averageRating = averageRating + element;
         });
         averageRating = averageRating / ratings.length;
