@@ -54,7 +54,7 @@ export default class NewCardDeck extends Component {
                 onSave(null, null, null)
             }} animationType="slide">
                 <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-                    <Text style={styles.text}>Create New CardDeck</Text>
+                    <Text style={styles.text}>Kartendeck anlegen</Text>
                     <TextInput style={[styles.input, { height: 80 }]} placeholder="Name eingeben" multiline={false}
                         underlineColorAndroid="transparent" onChangeText={(value) => this._inputChanged(value)}>
                     </TextInput>
@@ -86,10 +86,10 @@ export default class NewCardDeck extends Component {
                     />
                     <View>
                         <TouchableOpacity disabled={saveDisabled} style={[styles.button, saveBtnStyle.color]} onPress={() => this.onSavePressed(name, desc, examDate)}>
-                            <Text style={styles.buttonText}>Save</Text>
+                            <Text style={styles.buttonText}>Speichern</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.button} onPress={() => this.onCancelPressed()}>
-                            <Text style={styles.buttonText}>Cancel</Text>
+                            <Text style={styles.buttonText}>Abbrechen</Text>
                         </TouchableOpacity>
                     </View>
                 </KeyboardAvoidingView>

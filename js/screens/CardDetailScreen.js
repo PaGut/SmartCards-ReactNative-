@@ -104,6 +104,7 @@ export default class CardDetailScreen extends Component {
         currentCount = currentCount + 1;
         // set new state
         this.setState({ activeCard: activeCard, currentCount: currentCount, question: activeCard.question, answer: activeCard.answer });
+
         // set toolbar title counter
         let sTitle = `${currentCount}/${maxCount}`;
         this.props.navigation.setParams({ title: sTitle });
@@ -124,6 +125,7 @@ export default class CardDetailScreen extends Component {
         let activeCard = cards[currentCount - 2];
         currentCount = currentCount - 1;
         this.setState({ activeCard: activeCard, currentCount: currentCount, question: activeCard.question, answer: activeCard.answer });
+
         // set toolbar title counter
         let sTitle = `${currentCount}/${maxCount}`;
         this.props.navigation.setParams({ title: sTitle });
@@ -217,7 +219,6 @@ export default class CardDetailScreen extends Component {
     }
 
     _afterCardFlipped(oEvent) {
-        debugger;
         let { questionActive } = this.state;
         if (questionActive) {
             this.setState({ questionActive: false });

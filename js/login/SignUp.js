@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import {
-    StyleSheet, Image, TextInput, View, Keyboard,
+    StyleSheet, TextInput, View, Keyboard,
     SafeAreaView, Text, KeyboardAvoidingView,
     StatusBar, TouchableWithoutFeedback, TouchableOpacity
 } from "react-native";
 import Firebase from '../Firebase';
+import ResponsiveImage from '../components/ResponsiveImage';
+
 
 export default class SignIn extends Component {
 
@@ -31,7 +33,6 @@ export default class SignIn extends Component {
     }
 
     _checkInputValues = (email, confirmEmail, username, password, confirmPassword) => {
-        debugger;
         // check if all values are fullfilled
         if (email !== "" && confirmEmail !== "" && username !== "" && password !== "" && confirmPassword !== "") {
             // validate email
@@ -103,7 +104,8 @@ export default class SignIn extends Component {
                     <TouchableWithoutFeedback style={styles.container} onPress={Keyboard.dismiss}>
                         <View style={styles.container}>
                             <View style={styles.logoContainer}>
-                                <Image style={styles.log} source={require('../../assets/login_logo.jpg')} />
+                                <ResponsiveImage source={require('../../assets/StartLogo.png')} width={230} height={130} />
+
                             </View>
                             <View style={styles.infoContainer}>
                                 <TextInput style={styles.input}
