@@ -40,8 +40,11 @@ export default class RatingBar extends Component {
         var oMap = {
             language: 'de-DE',
         }
-        // execute text to speech
-        Speech.speak(cardValue, oMap);
+        if (Speech.isSpeakingAsync === false) {
+            // execute text to speech
+            Speech.speak(cardValue, oMap);
+        }
+
     }
 
     render() {
