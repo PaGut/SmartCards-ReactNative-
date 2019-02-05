@@ -186,7 +186,7 @@ export default class CardDetailScreen extends Component {
         let ratings = this.state.ratings;
         // check if rating is set        
         if (rating === 0) {
-            this.refs.toast.show('Please evaluate the card before navigate');
+            this.refs.toast.show('Bitte bewerte die Karte vor der Navigation');
             return;
         } else {
             ratings.push(rating);
