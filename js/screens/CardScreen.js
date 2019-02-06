@@ -134,7 +134,7 @@ export default class CardScreen extends Component {
 
     _startLearning = () => {
         this.props.navigation.navigate('CardDetailScreen', {
-            card: this.state.cards[0], learnActive: true
+            card: this.state.cards[0], learnActive: true, CardDeck: this.props.navigation.getParam('CardDeck')
         });
     }
 
@@ -161,7 +161,7 @@ export default class CardScreen extends Component {
                     renderItem={({ item, index }) => (
                         // render CardDeckItems
                         <Card card={item} index={index} onDelete={this._deleteCard} onStartLearning={this._startLearning} onPress={() => this.props.navigation.navigate('CardDetailScreen', {
-                            card: item, learnActive: false
+                            card: item, learnActive: false, CardDeck: this.props.navigation.getParam('CardDeck')
                         })} />
                     )}
                 >

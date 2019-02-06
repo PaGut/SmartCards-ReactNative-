@@ -1,9 +1,9 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": null,
-  "packagerPort": null,
-  "packagerPid": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null
+  "expoServerPort": 19000,
+  "packagerPort": 19001,
+  "packagerPid": 14220,
+  "expoServerNgrokUrl": "https://kw-ymf.anonymous.smartcards-reactnative.exp.direct",
+  "packagerNgrokUrl": "https://packager.kw-ymf.anonymous.smartcards-reactnative.exp.direct",
+  "ngrokPid": 14804
 }

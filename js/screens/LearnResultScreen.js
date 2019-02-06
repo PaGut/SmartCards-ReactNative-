@@ -1,11 +1,30 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { BarChart, XAxis } from 'react-native-svg-charts';
 import * as scale from 'd3-scale';
+// import icons
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default class LearnResultScreen extends Component {
 
     state = { averageRating: 0, ratings: [] };
+    // set CardDeck title at runtime
+    static navigationOptions = ({ navigation }) => {
+        let CardDeck = navigation.getParam("CardDeck");
+
+        return {
+            headerLeft: (
+                <Icon.Button name="keyboard-arrow-left"
+                    underlayColor="transparent"
+                    color="#007AFF"
+                    iconStyle={{ marginRight: 0, fontSize: 40 }}
+                    backgroundColor="transparent"
+                    onPress={() => { navigation.navigate('CardScreen') }}>
+                    {CardDeck.name}
+                </Icon.Button>
+            )
+        };
+    };
     // Called before the view is loaded
     componentWillMount() {
         //determine Ratingdata and write it into state
@@ -27,7 +46,7 @@ export default class LearnResultScreen extends Component {
             })
             counter++;
         });
-        debugger;
+
         return (
             <View style={styles.container}>
                 <View style={styles.result}>
@@ -107,6 +126,10 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: 'white',
         fontWeight: 'bold'
+    },
+    backButton: {
+        flex: 1,
+        flexDirection: "row"
     }
 
 });

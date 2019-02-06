@@ -89,7 +89,7 @@ export default class CardDetailScreen extends Component {
             // Learn Mode active
             if (learnActive) {
 
-                this.props.navigation.navigate('LearnResultScreen', { ratings: ratings });
+                this.props.navigation.navigate('LearnResultScreen', { ratings: ratings, CardDeck: this.props.navigation.getParam('CardDeck') });
                 //stop processing here because the learning-process is finished now
                 return;
             }
